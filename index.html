@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Taller Evaluativo: Vitaminas y Metabolismo - Grado 11° | Gimnasio Cristiano Faro de Luz</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- QRious -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            faroNavy: '#081b38',
+            faroBlue: '#0f2b54',
+            faroGold: '#c89d28',
+            faroGoldLight: '#dfb235',
+            faroEmerald: '#059669',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    textarea, input[type="text"], input[type="password"] {
+      -webkit-user-select: text !important;
+      -moz-user-select: text !important;
+      -ms-user-select: text !important;
+      user-select: text !important;
+    }
+    body {
+      background: radial-gradient(circle at 15% 15%, #113264 0%, #081b38 55%, #040d1e 100%);
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    .glass-card {
+      background: rgba(15, 43, 84, 0.68);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(223, 178, 53, 0.32);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    .glass-sub {
+      background: rgba(8, 27, 56, 0.75);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #c89d28 0%, #f59e0b 50%, #b38618 100%);
+    }
+    .dynamic-card {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .dynamic-card:hover {
+      transform: translateY(-3px) scale(1.01);
+      border-color: rgba(56, 189, 248, 0.6);
+      box-shadow: 0 12px 28px rgba(6, 182, 212, 0.18);
+    }
+    .option-btn {
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .option-btn:hover {
+      transform: scale(1.015);
+      border-color: #38bdf8;
+      background: rgba(14, 116, 144, 0.25);
+    }
+    .option-btn:active {
+      transform: scale(0.98);
+    }
+    .option-selected {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.32) 0%, rgba(200, 157, 40, 0.32) 100%) !important;
+      border: 2px solid #fbbf24 !important;
+      box-shadow: 0 0 22px rgba(251, 191, 36, 0.32);
+    }
+    #particlesCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .fade-transition {
+      animation: fadeSlide 0.36s ease-out forwards;
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #081b38;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c89d28;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="relative">
+
+  <!-- Fondo de Partículas Moleculares Dinámicas -->
+  <canvas id="particlesCanvas"></canvas>
+
+  <!-- BARRA SUPERIOR DE SUPERVISIÓN Y HERRAMIENTAS DEL TALLER -->
+  <header class="sticky top-0 z-40 glass-card border-b border-faroGold/40 px-3 py-2.5">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <!-- Estado del Taller -->
+      <div class="flex items-center gap-2.5">
+        <span class="relative flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+        </span>
+        <span class="text-xs sm:text-sm font-extrabold tracking-wide text-amber-300">
+          TALLER INTERACTIVO SUPERVISADO (-0.5 pts / Pestaña o Ruido &gt;60%)
+        </span>
+      </div>
+
+      <!-- Sonómetro Ambiental en Vivo -->
+      <div class="flex items-center gap-2 bg-slate-950/80 px-3 py-1 rounded-full border border-cyan-500/30">
+        <span class="text-[11px] font-bold text-cyan-300">🎙️ Ruido:</span>
+        <div class="w-20 sm:w-28 h-2.5 bg-slate-800 rounded-full overflow-hidden">
+          <div id="micLevelBar" class="h-full bg-emerald-500 transition-all duration-100" style="width: 5%;"></div>
+        </div>
+        <span id="micPercentText" class="text-xs font-mono text-slate-200">0%</span>
+      </div>
+
+      <!-- Botones de Lectura, Reloj y Acceso Docente -->
+      <div class="flex items-center gap-2">
+        <button id="openReadingsBtnTop" onclick="openReadingsModal()" class="hidden px-3 py-1.5 rounded-xl bg-cyan-500/25 hover:bg-cyan-500/40 border border-cyan-400 text-cyan-200 text-xs font-extrabold transition flex items-center gap-1.5 shadow">
+          <span>📘</span> Abrir Guía de Lecturas
+        </button>
+        <div id="liveClockDisplay" class="text-xs sm:text-sm font-mono bg-slate-950 px-3 py-1 rounded-lg border border-faroGold/40 text-faroGoldLight font-bold">
+          00:00:00
+        </div>
+        <button onclick="openTeacherModal()" class="gold-gradient text-slate-950 font-extrabold text-xs sm:text-sm px-3.5 py-1.5 rounded-xl shadow-md hover:scale-105 active:scale-95 transition flex items-center gap-1">
+          <span>🔑</span> Acceso Docente
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="relative z-10 max-w-7xl mx-auto px-4 py-6">
+
+    <!-- BANNER INSTITUCIONAL -->
+    <div class="glass-card rounded-2xl p-2 mb-6 overflow-hidden">
+      <img id="mainBannerImg" src="banner_faro_luz.png" alt="Banner Institucional Gimnasio Cristiano Faro de Luz" class="w-full h-auto rounded-xl object-cover shadow-lg" />
+    </div>
+
+    <!-- =========================================================================
+         PANTALLA 1: BIENVENIDA Y ESTACIONES DE LECTURA DEL TALLER (GRADO 11°)
+         ========================================================================= -->
+    <section id="welcomeScreen" class="glass-card rounded-2xl p-6 sm:p-8 fade-transition">
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-faroGold/30 pb-5 mb-6">
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-2">
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">
+              🔬 Taller Evaluativo Integrado • Biología y Química
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-faroGold/20 text-faroGoldLight border border-faroGold/40">
+              Grado 11° • Nivel Saber 11
+            </span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+            Las Vitaminas en Acción: Polaridad, Metabolismo, Avitaminosis e Hipervitaminosis
+          </h1>
+          <p class="text-slate-300 text-sm mt-1">
+            Docente: <strong class="text-faroGoldLight">Cristian David Ayazo</strong> &nbsp;|&nbsp; Metodología: Lecturas de Contexto + 20 Retos Cerrados + 5 Preguntas Abiertas de Taller
+          </p>
+        </div>
+
+        <div class="glass-sub px-4 py-2.5 rounded-xl border border-emerald-500/40 text-right shrink-0">
+          <div class="text-xs text-slate-400">Disponibilidad del Taller</div>
+          <div id="scheduleStatusBadge" class="text-sm font-bold text-emerald-400">Horario: Acceso habilitado permanentemente</div>
+        </div>
+      </div>
+
+      <!-- 4 Tarjetas Dinámicas de la Ruta de Aprendizaje -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
+        <div class="glass-sub dynamic-card p-4 rounded-2xl border border-cyan-500/30 flex items-start gap-3">
+          <div class="p-3 rounded-xl bg-cyan-500/20 text-cyan-300 shrink-0 text-xl">💧</div>
+          <div>
+            <h3 class="font-extrabold text-sm text-white">Estación 1: Polaridad</h3>
+            <p class="text-xs text-slate-300 mt-1">¿Por qué las vitaminas hidrosolubles se eliminan en la orina y las liposolubles se guardan en el hígado?</p>
+          </div>
+        </div>
+
+        <div class="glass-sub dynamic-card p-4 rounded-2xl border border-amber-500/30 flex items-start gap-3">
+          <div class="p-3 rounded-xl bg-amber-500/20 text-amber-300 shrink-0 text-xl">⚡</div>
+          <div>
+            <h3 class="font-extrabold text-sm text-white">Estación 2: Coenzimas</h3>
+            <p class="text-xs text-slate-300 mt-1">Cómo el complejo B y la vitamina C ayudan a las enzimas a producir energía (ATP) y colágeno.</p>
+          </div>
+        </div>
+
+        <div class="glass-sub dynamic-card p-4 rounded-2xl border border-emerald-500/30 flex items-start gap-3">
+          <div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-300 shrink-0 text-xl">🩺</div>
+          <div>
+            <h3 class="font-extrabold text-sm text-white">Estación 3: Avitaminosis</h3>
+            <p class="text-xs text-slate-300 mt-1">Enfermedades por falta de vitaminas: escorbuto, beriberi, pelagra, raquitismo y anemias.</p>
+          </div>
+        </div>
+
+        <div class="glass-sub dynamic-card p-4 rounded-2xl border border-rose-500/30 flex items-start gap-3">
+          <div class="p-3 rounded-xl bg-rose-500/20 text-rose-300 shrink-0 text-xl">⚠️</div>
+          <div>
+            <h3 class="font-extrabold text-sm text-white">Estación 4: Hipervitaminosis</h3>
+            <p class="text-xs text-slate-300 mt-1">El peligro de abusar de suplementos: intoxicación por exceso de vitaminas A, D y B₆.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTACIONES DE LECTURA INTERACTIVA (CON LENGUAJE CLARO PARA GRADO 11°) -->
+      <div class="glass-sub rounded-2xl p-5 border-2 border-faroGold/40 mb-7">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <h2 class="text-lg font-extrabold text-faroGoldLight flex items-center gap-2">
+            <span>📘</span> Guía Interactiva de Contexto (Lee las 4 pestañas antes de iniciar; podrás consultarlas durante todo el taller)
+          </h2>
+          <span class="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/40 font-bold">
+            ✓ Consulta permitida durante las preguntas
+          </span>
+        </div>
+
+        <!-- Botones de las 4 Lecturas -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button onclick="switchReadingTab(1)" id="tabBtn1" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-faroGold text-slate-950 transition shadow">
+            💧 Lectura 1: Polaridad y Destino en el Cuerpo
+          </button>
+          <button onclick="switchReadingTab(2)" id="tabBtn2" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+            ⚡ Lectura 2: Las Vitaminas como Coenzimas
+          </button>
+          <button onclick="switchReadingTab(3)" id="tabBtn3" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+            🩺 Lectura 3: Avitaminosis e Hipervitaminosis
+          </button>
+          <button onclick="switchReadingTab(4)" id="tabBtn4" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+            📊 Tabla 4: Resumen Rápido para el Taller
+          </button>
+        </div>
+
+        <!-- Contenedor de Lectura -->
+        <div id="readingContentArea" class="bg-slate-950/80 rounded-xl p-5 border border-slate-800 max-h-96 overflow-y-auto text-sm sm:text-base text-slate-200 leading-relaxed space-y-3">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Reglas Dinámicas del Taller -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-7 text-xs sm:text-sm">
+        <div class="glass-sub p-4 rounded-xl border-l-4 border-l-cyan-400">
+          <strong class="text-cyan-300 block mb-1">🎯 Calificación Exacta (5.00 pts)</strong>
+          20 preguntas cerradas (<strong class="text-white">0.185 pts c/u = 3.70 pts</strong>) y 5 preguntas abiertas de taller (<strong class="text-white">0.260 pts c/u = 1.30 pts</strong>).
+        </div>
+        <div class="glass-sub p-4 rounded-xl border-l-4 border-l-amber-400">
+          <strong class="text-amber-300 block mb-1">⏱️ Ritmo del Taller</strong>
+          Cada pregunta cerrada tiene un tiempo de reflexión de <strong class="text-white">1.5 minutos</strong> y cada pregunta abierta de <strong class="text-white">10 minutos</strong>.
+        </div>
+        <div class="glass-sub p-4 rounded-xl border-l-4 border-l-emerald-400">
+          <strong class="text-emerald-300 block mb-1">💡 Apoyo Permanente</strong>
+          Durante las preguntas puedes activar el botón <strong class="text-white">"Ver Lecturas al Lado"</strong> para consultar los textos sin salir de la pantalla.
+        </div>
+      </div>
+
+      <!-- Registro e Inicio -->
+      <div class="bg-slate-950/90 p-5 sm:p-6 rounded-2xl border-2 border-faroGold/50 shadow-xl">
+        <label for="studentNameInput" class="block text-sm font-extrabold text-faroGoldLight mb-2">
+          Escribe tus Nombres y Apellidos Completos para abrir tu cuaderno de taller interactivo:
+        </label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input
+            type="text"
+            id="studentNameInput"
+            placeholder="Ej. Camilo Andrés Pérez Soto"
+            oninput="validateStudentName()"
+            class="flex-1 bg-slate-900 text-white px-4 py-3.5 rounded-xl border border-slate-700 focus:border-faroGold focus:outline-none font-semibold"
+          />
+          <button
+            id="startExamBtn"
+            onclick="startExamSession()"
+            disabled
+            class="px-7 py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wider transition shadow-lg bg-slate-800 text-slate-500 cursor-not-allowed"
+          >
+            Comenzar Taller Ahora 🚀
+          </button>
+        </div>
+        <p id="nameValidationMsg" class="text-xs text-amber-400 mt-2">
+          * Ingresa al menos un nombre y un apellido para habilitar el botón de inicio.
+        </p>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         PANTALLA 2: DESARROLLO INTERACTIVO DEL TALLER (CON PANEL DIVIDIDO)
+         ========================================================================= -->
+    <section id="examScreen" class="hidden space-y-5 fade-transition">
+      <!-- Cabecera de Progreso del Taller -->
+      <div class="glass-card rounded-2xl p-4 sm:p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-700/80">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span id="questionPhaseBadge" class="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                Parte I: Retos de Selección Múltiple
+              </span>
+              <span id="questionPointsBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-faroGold/20 text-faroGoldLight border border-faroGold/40">
+                Valor: 0.185 pts
+              </span>
+              <span id="competenceTextSlot" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                Competencia: Uso comprensivo del conocimiento científico
+              </span>
+            </div>
+            <h2 id="questionCounterTitle" class="text-xl sm:text-2xl font-extrabold text-white mt-2">
+              Punto 1 de 25
+            </h2>
+          </div>
+
+          <!-- Botón de Vista Dividida, Penalizaciones y Temporizador -->
+          <div class="flex flex-wrap items-center gap-3">
+            <button onclick="toggleSplitReferencePanel()" class="px-3.5 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/35 border border-cyan-400/60 text-cyan-200 text-xs font-extrabold transition flex items-center gap-1.5">
+              <span>📖</span> <span id="toggleRefPanelText">Ver Lecturas al Lado</span>
+            </button>
+
+            <div class="glass-sub px-3.5 py-2 rounded-xl border border-rose-500/40 text-center">
+              <div class="text-[10px] uppercase text-slate-400 font-bold">Penalización</div>
+              <div id="penaltyCounterDisplay" class="text-sm font-extrabold text-rose-400">-0.00 pts (0)</div>
+            </div>
+
+            <div id="timerBox" class="glass-sub px-4 py-2 rounded-xl border border-amber-500/60 text-center min-w-[130px]">
+              <div class="text-[10px] uppercase text-amber-300 font-bold">Tiempo de Lectura</div>
+              <div id="questionTimerDisplay" class="text-xl font-mono font-extrabold text-amber-400">01:30</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Progreso Animada -->
+        <div class="mt-4">
+          <div class="flex justify-between text-xs font-bold text-slate-300 mb-1">
+            <span>Avance General del Taller Evaluativo</span>
+            <span id="progressPercentLabel" class="text-faroGoldLight font-mono">4% completado</span>
+          </div>
+          <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden p-0.5 border border-slate-700">
+            <div id="examProgressBar" class="h-full gold-gradient rounded-full transition-all duration-300" style="width: 4%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid Dinámico: Guía de Lecturas Lateral (Opcional) + Pregunta Actual -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+        <!-- Panel Lateral de Lecturas para resolver el Taller -->
+        <aside id="splitReferenceColumn" class="hidden lg:col-span-5 glass-card rounded-2xl p-4 border border-cyan-400/50 sticky top-20">
+          <div class="flex items-center justify-between border-b border-slate-700 pb-2.5 mb-3">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
+              <span>📘</span> Material de Apoyo del Taller
+            </span>
+            <button onclick="toggleSplitReferencePanel()" class="text-xs text-rose-300 hover:text-white font-bold px-2 py-0.5 rounded bg-rose-500/20">
+              Ocultar ✕
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            <button onclick="switchSplitReadingTab(1)" id="splitTab1" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-faroGold text-slate-950">1. Polaridad</button>
+            <button onclick="switchSplitReadingTab(2)" id="splitTab2" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">2. Coenzimas</button>
+            <button onclick="switchSplitReadingTab(3)" id="splitTab3" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">3. Enfermedades</button>
+            <button onclick="switchSplitReadingTab(4)" id="splitTab4" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">4. Tabla Resumen</button>
+          </div>
+          <div id="splitReadingBody" class="bg-slate-950/80 rounded-xl p-4 max-h-[580px] overflow-y-auto text-xs sm:text-sm text-slate-200 leading-relaxed space-y-3 border border-slate-800"></div>
+        </aside>
+
+        <!-- Tarjeta Principal de la Pregunta -->
+        <div id="mainProblemColumn" class="lg:col-span-12 glass-card rounded-2xl p-5 sm:p-7">
+
+          <!-- Lámina Científica PNG (900x600) + Visor Molecular 3D Three.js -->
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 mb-6">
+            <div id="plateContainerCol" class="xl:col-span-12 glass-sub rounded-2xl p-3 border border-slate-700 flex flex-col items-center">
+              <div class="w-full flex items-center justify-between text-xs text-slate-300 mb-2 px-1">
+                <span id="plateCaptionTitle" class="font-extrabold text-faroGoldLight">Lámina Ilustrativa del Caso</span>
+                <span class="text-[11px] font-mono text-cyan-300 bg-cyan-950/70 px-2.5 py-0.5 rounded-full border border-cyan-500/30">Esquema Visual HD</span>
+              </div>
+              <img id="questionPlateImg" src="" alt="Lámina Científica" class="w-full max-h-[340px] object-contain rounded-xl border border-slate-800 bg-slate-950 shadow-inner" />
+            </div>
+
+            <!-- Visor 3D Interactivo Three.js -->
+            <div id="threeContainerCol" class="hidden xl:col-span-5 glass-sub rounded-2xl p-3 border border-cyan-500/40 flex flex-col items-center justify-between">
+              <div class="w-full flex items-center justify-between text-xs mb-2">
+                <span class="font-bold text-cyan-300">🧊 Estructura 3D Interactiva (CPK)</span>
+                <span class="text-[11px] text-slate-400">Gira en 360° con el ratón o dedo</span>
+              </div>
+              <div id="threeCanvasMount" class="w-full h-[270px] rounded-xl bg-slate-950 border border-slate-800 overflow-hidden relative cursor-grab active:cursor-grabbing"></div>
+              <div class="text-[11px] text-slate-300 mt-2 text-center">
+                Colores CPK: Carbono (Gris) • Oxígeno (Rojo) • Nitrógeno (Azul) • Fósforo (Naranja) • Azufre (Amarillo)
+              </div>
+            </div>
+          </div>
+
+          <!-- Enunciado de la Pregunta -->
+          <div class="bg-slate-900/95 border-l-4 border-l-faroGold border border-slate-700 rounded-r-2xl p-5 mb-6 shadow-md">
+            <p id="questionStemText" class="text-sm sm:text-base text-slate-100 leading-relaxed font-medium whitespace-pre-line"></p>
+          </div>
+
+          <!-- Opciones Cerradas (Preguntas 1 a 20) -->
+          <div id="closedOptionsContainer" class="grid grid-cols-1 gap-3.5 mb-6"></div>
+
+          <!-- Área de Respuesta Abierta (Preguntas 21 a 25) -->
+          <div id="openAnswerContainer" class="hidden mb-6">
+            <div class="glass-sub p-5 rounded-2xl border border-faroGold/50">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <label for="openAnswerTextarea" class="text-xs sm:text-sm font-extrabold text-faroGoldLight">
+                  ✍️ Escribe tu respuesta de taller con tus propias palabras (Mínimo 4 líneas y 28 palabras relacionadas con el tema):
+                </label>
+                <span id="openValidationBadge" class="text-xs px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">
+                  Falta completar extensión mínima
+                </span>
+              </div>
+              <textarea
+                id="openAnswerTextarea"
+                rows="6"
+                oninput="validateOpenAnswerLive()"
+                placeholder="Explica aquí tu respuesta de forma clara, relacionando el tipo de vitamina, su función en el metabolismo y el efecto en la salud..."
+                class="w-full bg-slate-950 text-white p-4 rounded-xl border border-slate-700 focus:border-faroGold focus:outline-none text-sm leading-relaxed"
+              ></textarea>
+              <div class="flex flex-wrap items-center justify-between text-xs text-slate-300 mt-3 gap-2">
+                <div id="openStatsWords">Palabras escritas: <strong class="text-white">0 / 28</strong></div>
+                <div id="openStatsLines">Líneas completadas: <strong class="text-white">0 / 4</strong></div>
+                <div id="openStatsCoherence" class="text-amber-300">Usa palabras clave de la lectura en tu explicación.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pie de Avance -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800">
+            <div id="lockStatusMessage" class="text-xs sm:text-sm text-amber-300 font-semibold flex items-center gap-2">
+              <span>🔒</span> Lee con calma: el botón se activará cuando el reloj llegue a 00:00 y elijas o redactes tu respuesta.
+            </div>
+            <button
+              id="nextQuestionBtn"
+              onclick="handleNextQuestion()"
+              disabled
+              class="w-full sm:w-auto px-7 py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wider transition shadow-lg bg-slate-800 text-slate-500 cursor-not-allowed"
+            >
+              Siguiente Punto del Taller →
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         PANTALLA 3: RESULTADOS FINALES, CÓDIGO QR Y REPORTE PDF
+         ========================================================================= -->
+    <section id="resultsScreen" class="hidden glass-card rounded-2xl p-6 sm:p-8 fade-transition">
+      <div class="text-center border-b border-faroGold/30 pb-6 mb-6">
+        <span class="inline-block px-4 py-1 rounded-full text-xs font-extrabold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 mb-2">
+          ✓ Taller Evaluativo Finalizado y Sincronizado con Docente
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
+          Resumen de Desempeño — Taller de Vitaminas y Metabolismo
+        </h2>
+        <p id="resultStudentSubtitle" class="text-slate-300 text-sm mt-1"></p>
+      </div>
+
+      <!-- Tarjetas de Calificación -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="glass-sub p-5 rounded-2xl border-2 border-faroGold text-center">
+          <div class="text-xs uppercase font-bold text-slate-400">Nota Definitiva</div>
+          <div id="finalGradeDisplay" class="text-4xl font-extrabold text-faroGoldLight mt-1">0.00</div>
+          <div class="text-[11px] text-slate-400 mt-1">Escala de 0.00 a 5.00</div>
+        </div>
+
+        <div class="glass-sub p-5 rounded-2xl border border-cyan-500/40 text-center">
+          <div class="text-xs uppercase font-bold text-slate-400">Cerradas (3.70 pts)</div>
+          <div id="closedScoreDisplay" class="text-2xl font-extrabold text-cyan-300 mt-1">0 / 20</div>
+          <div id="closedPointsSub" class="text-xs text-slate-300 mt-1">0.00 pts obtenidos</div>
+        </div>
+
+        <div class="glass-sub p-5 rounded-2xl border border-emerald-500/40 text-center">
+          <div class="text-xs uppercase font-bold text-slate-400">Abiertas (1.30 pts)</div>
+          <div id="openScoreDisplay" class="text-2xl font-extrabold text-emerald-300 mt-1">0 / 5</div>
+          <div id="openPointsSub" class="text-xs text-slate-300 mt-1">0.00 pts obtenidos</div>
+        </div>
+
+        <div class="glass-sub p-5 rounded-2xl border border-rose-500/40 text-center">
+          <div class="text-xs uppercase font-bold text-slate-400">Penalizaciones</div>
+          <div id="finalPenaltyDisplay" class="text-2xl font-extrabold text-rose-400 mt-1">-0.00 pts</div>
+          <div id="finalPenaltyCountSub" class="text-xs text-slate-300 mt-1">0 alertas registradas</div>
+        </div>
+      </div>
+
+      <!-- QR y Descarga PDF -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center glass-sub p-6 rounded-2xl border border-slate-700 mb-6">
+        <div class="md:col-span-4 flex flex-col items-center">
+          <div class="bg-white p-3 rounded-2xl shadow-xl">
+            <canvas id="qrCanvasElement" width="180" height="180"></canvas>
+          </div>
+          <span class="text-xs text-slate-400 mt-2 font-mono">Código QR Oficial de Validación</span>
+        </div>
+
+        <div class="md:col-span-8 space-y-4">
+          <h3 class="text-lg font-extrabold text-faroGoldLight">
+            Entrega Enviada a la Consola del Prof. Cristian David Ayazo
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Tus respuestas ya se encuentran registradas en la consola docente. Descarga tu <strong>Reporte Oficial en PDF</strong> con el banner del colegio, tu código QR, el balance de tus 20 preguntas cerradas y el texto completo de tus 5 respuestas abiertas.
+          </p>
+          <button
+            onclick="generateOfficialPDFReport()"
+            class="gold-gradient text-slate-950 font-extrabold text-sm px-6 py-3.5 rounded-xl shadow-lg hover:scale-105 active:scale-95 transition flex items-center gap-2"
+          >
+            <span>📄</span> Descargar Reporte Completo del Taller en PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Revisión de Respuestas -->
+      <div class="space-y-3">
+        <h3 class="text-base font-extrabold text-white border-b border-slate-800 pb-2">
+          Retroalimentación Detallada del Taller
+        </h3>
+        <div id="resultsBreakdownList" class="space-y-3 max-h-[480px] overflow-y-auto pr-1"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DE LECTURAS DE CONTEXTO -->
+  <div id="readingsModal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl max-w-4xl w-full p-6 border border-faroGold/50 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+        <h3 class="text-lg font-extrabold text-faroGoldLight flex items-center gap-2">
+          <span>📘</span> Guía de Lecturas del Taller — Grado 11°
+        </h3>
+        <button onclick="closeReadingsModal()" class="px-3 py-1 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-bold">
+          Cerrar ✕
+        </button>
+      </div>
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button onclick="switchModalReadingTab(1)" id="modalTabBtn1" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-faroGold text-slate-950">1. Polaridad y Destino</button>
+        <button onclick="switchModalReadingTab(2)" id="modalTabBtn2" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">2. Vitaminas y Coenzimas</button>
+        <button onclick="switchModalReadingTab(3)" id="modalTabBtn3" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">3. Avitaminosis e Hipervitaminosis</button>
+        <button onclick="switchModalReadingTab(4)" id="modalTabBtn4" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">4. Tabla Resumen</button>
+      </div>
+      <div id="modalReadingContentArea" class="bg-slate-950/90 rounded-xl p-5 border border-slate-800 overflow-y-auto text-sm sm:text-base text-slate-200 leading-relaxed space-y-3 flex-1"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DE PANTALLA COMPLETA -->
+  <div id="fullscreenModal" class="fixed inset-0 z-50 hidden bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl max-w-md w-full p-6 border-2 border-rose-500 text-center space-y-4">
+      <div class="text-4xl">🖥️</div>
+      <h3 class="text-xl font-extrabold text-white">Mantén el Modo Pantalla Completa</h3>
+      <p class="text-xs sm:text-sm text-slate-300">
+        Para desarrollar el taller del <strong>Gimnasio Cristiano Faro de Luz</strong> sin interrupciones, haz clic en el botón inferior para volver a pantalla completa.
+      </p>
+      <button onclick="restoreFullscreenMode()" class="w-full gold-gradient text-slate-950 font-extrabold py-3 rounded-xl shadow-lg">
+        Volver a Pantalla Completa
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST PERSONALIZADO (CERO ALERTAS NATIVAS) -->
+  <div id="customToastModal" class="fixed bottom-5 right-5 z-50 hidden max-w-sm w-full glass-card border-2 border-rose-500 rounded-2xl p-4 shadow-2xl">
+    <div class="flex items-start gap-3">
+      <span class="text-2xl">⚠️</span>
+      <div class="flex-1">
+        <h4 id="toastTitle" class="text-sm font-extrabold text-rose-400">Aviso del Sistema</h4>
+        <p id="toastMessage" class="text-xs text-slate-200 mt-1"></p>
+      </div>
+      <button onclick="hideCustomToast()" class="text-slate-400 hover:text-white text-xs font-bold">✕</button>
+    </div>
+  </div>
+
+  <!-- MODAL DOCENTE MAESTRO (dmar2026 / 0323) -->
+  <div id="teacherModal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl max-w-md w-full p-6 border border-faroGold">
+      <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+        <h3 class="text-lg font-extrabold text-faroGoldLight">🔐 Panel Maestro Docente</h3>
+        <button onclick="closeTeacherModal()" class="text-slate-400 hover:text-white text-sm font-bold">✕</button>
+      </div>
+      <div id="teacherAuthBox" class="space-y-3">
+        <label class="block text-xs font-bold text-slate-300">Ingresa la clave docente (Prof. Cristian David Ayazo):</label>
+        <input type="password" id="teacherPassInput" placeholder="Clave..." class="w-full bg-slate-950 text-white px-4 py-2.5 rounded-xl border border-slate-700 text-sm" />
+        <p id="teacherAuthError" class="hidden text-xs text-rose-400 font-bold">Clave incorrecta.</p>
+        <button onclick="verifyTeacherPassword()" class="w-full gold-gradient text-slate-950 font-extrabold py-2.5 rounded-xl text-sm">Desbloquear Controles</button>
+      </div>
+      <div id="teacherControlsBox" class="hidden space-y-2.5">
+        <div class="text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/30 p-2 rounded-lg">✓ Acceso Docente Autorizado</div>
+        <button onclick="teacherActionUnlockNow()" class="w-full text-left px-4 py-2.5 rounded-xl bg-cyan-600/25 hover:bg-cyan-600/40 border border-cyan-400/50 text-cyan-200 text-xs font-bold">1. Ingresar / Poner Reloj Actual en 00:00</button>
+        <button onclick="teacherActionNextQuestion()" class="w-full text-left px-4 py-2.5 rounded-xl bg-amber-600/25 hover:bg-amber-600/40 border border-amber-400/50 text-amber-200 text-xs font-bold">2. Avanzar al Siguiente Punto</button>
+        <button onclick="teacherActionJumpToOpen()" class="w-full text-left px-4 py-2.5 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-400/50 text-emerald-200 text-xs font-bold">3. Saltar a Preguntas Abiertas (Punto 21)</button>
+        <button onclick="teacherActionClearPenalties()" class="w-full text-left px-4 py-2.5 rounded-xl bg-purple-600/25 hover:bg-purple-600/40 border border-purple-400/50 text-purple-200 text-xs font-bold">4. Reiniciar Penalizaciones a 0.00 pts</button>
+        <button onclick="teacherActionForceFinish()" class="w-full text-left px-4 py-2.5 rounded-xl bg-rose-600/25 hover:bg-rose-600/40 border border-rose-400/50 text-rose-200 text-xs font-bold">5. Finalizar Taller Ahora</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       LÓGICA JAVASCRIPT DEL TALLER EVALUATIVO (GRADO 11°)
+       ========================================================================= -->
+  <script>
+    const EXAM_CONFIG = {
+      examId: 'TALLER-VITAMINAS-G11-2026',
+      examTitle: 'Taller Evaluativo Integrado: Las Vitaminas en la Salud y el Metabolismo - Grado 11°',
+      grade: '11°',
+      subject: 'Biología y Química Integrada',
+      teacher: 'Cristian David Ayazo',
+      institution: 'Gimnasio Cristiano Faro de Luz',
+      firebaseBaseUrl: 'https://faro-luz-evaluaciones-default-rtdb.firebaseio.com',
+      scheduleEnabled: false,
+      closedTimeSeconds: 90,   // 1.5 min
+      openTimeSeconds: 600,    // 10 min
+      closedTotalPoints: 3.70, // 20 × 0.185
+      openTotalPoints: 1.30,   // 5 × 0.260
+      penaltyStep: 0.50,
+      micThresholdPercent: 60
+    };
+
+    /***************************************************************************
+     * LECTURAS DE CONTEXTO ADAPTADAS A GRADO 11° (CLARAS, PEDAGÓGICAS Y RIGUROSAS)
+     ***************************************************************************/
+    const SCIENTIFIC_READINGS = {
+      1: {
+        title: "Lectura 1: De la Polaridad Química al Destino en el Cuerpo",
+        html: `
+          <p>En la clase anterior vimos que las <strong>vitaminas</strong> son biomoléculas orgánicas indispensables que nuestro cuerpo necesita en pequeñas cantidades para funcionar bien. Como no podemos fabricarlas en cantidad suficiente, debemos obtenerlas de los alimentos. La clave para entender cómo viajan, dónde se guardan y si pueden volverse tóxicas está en su <strong>polaridad química</strong>:</p>
+          <p><strong class="text-cyan-300">1. Vitaminas Hidrosolubles (Complejo B y Vitamina C):</strong><br>
+          En su estructura química tienen varios grupos polares (como grupos hidroxilo <strong>–OH</strong>, carboxilo <strong>–COOH</strong> y amino <strong>–NH₂</strong>) que forman puentes de hidrógeno con el agua. Por eso se disuelven fácilmente en el agua de la sangre y del interior celular. Se absorben en el intestino hacia la sangre, cumplen su función y <strong>casi no se almacenan en el cuerpo</strong> (con la única excepción de la vitamina B₁₂, que sí se guarda en el hígado). Si consumes un exceso de vitamina C o del complejo B, los riñones filtran ese sobrante y lo eliminan rápidamente en la <strong>orina</strong>. Por esta razón es difícil intoxicarse con ellas, pero debemos consumirlas todos los días.</p>
+          <p><strong class="text-amber-300">2. Vitaminas Liposolubles (Vitaminas A, D, E y K):</strong><br>
+          Sus moléculas están formadas principalmente por largas cadenas de carbono e hidrógeno (estructuras apolares o hidrofóbicas), por lo que <strong>no se disuelven en agua sino en grasas y aceites</strong>. Para que nuestro intestino pueda absorberlas, necesitamos la ayuda de las <strong>sales biliares</strong> producidas por el hígado, las cuales envuelven las grasas formando pequeñas gotitas llamadas <em>micelas</em>. Luego viajan en paquetes de grasa llamados <em>quilomicrones</em> y <strong>se almacenan en gran cantidad en el hígado y el tejido adiposo</strong>. Como no se disuelven en el agua de la orina, el cuerpo tarda mucho en eliminarlas; por eso, tomar megadosis de vitaminas A o D sin control médico provoca acumulaciones peligrosas llamadas <strong>hipervitaminosis</strong>.</p>
+        `
+      },
+      2: {
+        title: "Lectura 2: ¿Cómo Funcionan en el Metabolismo? Las Vitaminas como Coenzimas",
+        html: `
+          <p>Las vitaminas <strong>no aportan calorías ni energía directa</strong> (no se queman como la glucosa o las grasas), pero sin ellas nuestras células no podrían extraer energía de los alimentos. La mayoría de las vitaminas hidrosolubles actúan como <strong>coenzimas</strong>: pequeñas "piezas ayudantes" que se unen a las enzimas para que las reacciones químicas del metabolismo ocurran a tiempo:</p>
+          <ul class="list-disc pl-5 space-y-2">
+            <li><strong class="text-faroGoldLight">Vitamina B₁ (Tiamina):</strong> Se transforma en la coenzima <strong>TPP (Pirofosfato de Tiamina)</strong>, indispensable para la enzima que convierte el <em>piruvato</em> (que viene de la glucosa) en <em>acetil-CoA</em> para entrar al <strong>Ciclo de Krebs</strong> en la mitocondria. Sin B₁, el piruvato no entra a la mitocondria, se desvía a <strong>ácido láctico</strong> y las neuronas y el corazón se quedan sin energía (ATP).</li>
+            <li><strong class="text-faroGoldLight">Vitamina B₂ (Riboflavina) y B₃ (Niacina):</strong> La B₂ forma el <strong>FAD</strong> y la B₃ forma el <strong>NAD⁺</strong>. Ambas funcionan como "camiones transportadores de electrones" durante la glucólisis y el Ciclo de Krebs, llevando electrones hacia la cadena respiratoria mitocondrial para fabricar ATP.</li>
+            <li><strong class="text-faroGoldLight">Vitamina B₅ (Ácido Pantoténico):</strong> Es la base para construir la <strong>Coenzima A (CoA-SH)</strong>, la cual usa su grupo azufre (tiol, –SH) para transportar fragmentos de carbono (como el acetil-CoA) en el metabolismo de azúcares y grasas.</li>
+            <li><strong class="text-faroGoldLight">Vitamina B₆ (Piridoxina):</strong> Su forma activa (<strong>PLP</strong>) ayuda a las enzimas que transforman aminoácidos y fabrica neurotransmisores cerebrales como el <strong>GABA</strong> (que mantiene la calma en las neuronas y evita convulsiones).</li>
+            <li><strong class="text-faroGoldLight">Vitamina B₇ (Biotina):</strong> Ayuda a las enzimas carboxilasas a fabricar nueva glucosa cuando estamos en ayuno (gluconeogénesis). Curiosamente, comer mucha clara de huevo cruda impide su absorción porque contiene una proteína llamada <em>avidina</em> que atrapa a la biotina.</li>
+            <li><strong class="text-faroGoldLight">Vitamina B₉ (Ácido Fólico) y B₁₂ (Cobalamina):</strong> Trabajan en equipo para fabricar los nucleótidos del <strong>ADN</strong> cuando las células se dividen (como al formar glóbulos rojos o durante el desarrollo del sistema nervioso del bebé en el embarazo). Además, la B₁₂ protege la <strong>vaina de mielina</strong> que recubre los nervios, y necesita del <em>Factor Intrínseco</em> del estómago para poder absorberse.</li>
+            <li><strong class="text-faroGoldLight">Vitamina C (Ácido Ascórbico):</strong> Mantiene activo al hierro (en estado ferroso <strong>Fe²⁺</strong>) dentro de la enzima que hidroxila y da firmeza a las fibras de <strong>colágeno</strong> (la proteína que sostiene las encías, la piel y los vasos sanguíneos), y además ayuda a absorber el hierro de los vegetales en el intestino.</li>
+          </ul>
+        `
+      },
+      3: {
+        title: "Lectura 3: Problemas de Salud: Avitaminosis (Déficit) e Hipervitaminosis (Exceso)",
+        html: `
+          <p><strong class="text-emerald-300">A. Enfermedades por Deficiencia (Avitaminosis):</strong> Cuando falta una vitamina en la dieta o falla su absorción, se detiene su ruta metabólica y aparece una enfermedad característica:</p>
+          <ul class="list-disc pl-5 space-y-1.5">
+            <li><strong>Escorbuto (Falta de Vitamina C):</strong> El colágeno se vuelve débil e inestable; sangran las encías, salen manchas rojas en la piel (petequias), se aflojan los dientes y las heridas no cicatrizan.</li>
+            <li><strong>Beriberi y Síndrome de Wernicke (Falta de Vitamina B₁):</strong> Causa debilidad nerviosa (beriberi seco) o falla del corazón con hinchazón de piernas por falta de ATP (beriberi húmedo).</li>
+            <li><strong>Pelagra (Falta de Vitamina B₃ o del aminoácido triptófano):</strong> Produce las "3 D": <em>Dermatitis</em> en zonas expuestas al sol, <em>Diarrea</em> y <em>Demencia</em>, porque la piel, el intestino y el cerebro necesitan mucho NAD⁺ para renovar sus células.</li>
+            <li><strong>Anemia Megaloblástica y Perniciosa (Falta de B₉ o B₁₂):</strong> Al no poderse copiar bien el ADN, la médula ósea produce glóbulos rojos gigantes e inmaduros. Si la falta es de B₁₂, también se daña la mielina de los nervios causando hormigueos y pérdida de equilibrio.</li>
+            <li><strong>Ceguera Nocturna / Xeroftalmia (Falta de Vitamina A):</strong> La vitamina A forma el <em>retinal</em> de la rodopsina en la retina del ojo; sin ella no vemos en la penumbra y se seca la córnea.</li>
+            <li><strong>Raquitismo en niños y Osteomalacia en adultos (Falta de Vitamina D):</strong> La vitamina D activa permite absorber <strong>calcio (Ca²⁺)</strong> en el intestino; sin ella, los huesos se ablandan y se curvan.</li>
+            <li><strong>Hemorragias por falta de coagulación (Falta de Vitamina K):</strong> La vitamina K activa en el hígado los factores de coagulación (como la protrombina) para que puedan unirse al calcio y tapar heridas.</li>
+          </ul>
+          <p class="mt-3"><strong class="text-rose-400">B. Enfermedades por Exceso o Megadosis (Hipervitaminosis):</strong> "Más no siempre es mejor". Abusar de suplementos rompe el equilibrio (homeostasis) del cuerpo:</p>
+          <ul class="list-disc pl-5 space-y-1.5">
+            <li><strong>Hipervitaminosis A:</strong> Como se acumula en el hígado, su exceso daña las membranas celulares, inflama el hígado, aumenta la presión dentro del cráneo (dolor de cabeza severo) y, en mujeres embarazadas, causa malformaciones graves en el feto (efecto <em>teratogénico</em>).</li>
+            <li><strong>Hipervitaminosis D:</strong> Hace que el intestino absorba demasiado calcio hacia la sangre (hipercalcemia), provocando que el calcio se cristalice y forme piedras o calcificaciones dentro de los <strong>riñones (nefrocalcinosis)</strong> y el corazón.</li>
+            <li><strong>Exceso extremo de Vitamina B₆:</strong> Aunque es hidrosoluble, tomar megadosis en pastillas durante meses satura su eliminación y daña los nervios sensitivos, causando entumecimiento y torpeza al caminar.</li>
+          </ul>
+        `
+      },
+      4: {
+        title: "Tabla 4: Ficha Resumen de Consulta Rápida para el Taller",
+        html: `
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse border border-slate-700 text-xs">
+              <thead>
+                <tr class="bg-slate-900 text-faroGoldLight">
+                  <th class="p-2.5 border border-slate-700">Vitamina</th>
+                  <th class="p-2.5 border border-slate-700">Clasificación por Polaridad</th>
+                  <th class="p-2.5 border border-slate-700">Función Metabólica Principal</th>
+                  <th class="p-2.5 border border-slate-700">Problema por Falta (Avitaminosis)</th>
+                  <th class="p-2.5 border border-slate-700">Problema por Exceso (Hipervitaminosis)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800">
+                <tr>
+                  <td class="p-2 font-bold text-cyan-300">Vitamina C (Ác. Ascórbico)</td>
+                  <td class="p-2">Hidrosoluble (Polar)</td>
+                  <td class="p-2">Mantiene el Fe²⁺ activo para formar colágeno firme; ayuda a absorber hierro en el intestino.</td>
+                  <td class="p-2 text-amber-300">Escorbuto (sangrado de encías, mala cicatrización).</td>
+                  <td class="p-2">Se elimina en la orina (bajo riesgo; cálculos en dosis extremas).</td>
+                </tr>
+                <tr class="bg-slate-900/50">
+                  <td class="p-2 font-bold text-cyan-300">Vitamina B₁ (Tiamina)</td>
+                  <td class="p-2">Hidrosoluble (Polar)</td>
+                  <td class="p-2">Coenzima TPP: convierte piruvato en acetil-CoA para el Ciclo de Krebs.</td>
+                  <td class="p-2 text-amber-300">Beriberi (nervios y corazón) y Wernicke; acumula ácido láctico.</td>
+                  <td class="p-2">El exceso se elimina por vía renal en la orina.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 font-bold text-cyan-300">Vitamina B₂ y B₃</td>
+                  <td class="p-2">Hidrosolubles (Polares)</td>
+                  <td class="p-2">Forman FAD (B₂) y NAD⁺ (B₃) para transportar electrones y producir ATP.</td>
+                  <td class="p-2 text-amber-300">B₂: boqueras (queilosis). B₃: Pelagra (Dermatitis, Diarrea, Demencia).</td>
+                  <td class="p-2">Se eliminan en orina (B₃ en exceso da enrojecimiento facial).</td>
+                </tr>
+                <tr class="bg-slate-900/50">
+                  <td class="p-2 font-bold text-cyan-300">Vitamina B₆ (Piridoxina)</td>
+                  <td class="p-2">Hidrosoluble (Polar)</td>
+                  <td class="p-2">Coenzima PLP: metabolismo de aminoácidos y síntesis del neurotransmisor GABA.</td>
+                  <td class="p-2 text-amber-300">Irritabilidad y convulsiones por falta de GABA (común con fármaco isoniazida).</td>
+                  <td class="p-2 text-rose-300">Megadosis (&gt;2 g/día): daño en nervios sensitivos (ataxia).</td>
+                </tr>
+                <tr>
+                  <td class="p-2 font-bold text-cyan-300">Vitamina B₉ y B₁₂</td>
+                  <td class="p-2">Hidrosolubles (Polares)</td>
+                  <td class="p-2">Síntesis de ADN para división celular; B₁₂ además mantiene la mielina de los nervios.</td>
+                  <td class="p-2 text-amber-300">Anemia megaloblástica/perniciosa; defectos del tubo neural (B₉); daño en mielina (B₁₂).</td>
+                  <td class="p-2">Exceso de B₉ puede ocultar la anemia de B₁₂ sin frenar el daño nervioso.</td>
+                </tr>
+                <tr class="bg-slate-900/50">
+                  <td class="p-2 font-bold text-amber-300">Vitamina A (Retinol)</td>
+                  <td class="p-2">Liposoluble (Apolar)</td>
+                  <td class="p-2">Forma el retinal para la visión en penumbra (bastones) y protege epitelios.</td>
+                  <td class="p-2 text-amber-300">Ceguera nocturna y resequedad ocular (xeroftalmia).</td>
+                  <td class="p-2 text-rose-300">Daño al hígado, presión intracraneal alta y malformaciones fetales.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 font-bold text-amber-300">Vitamina D (Calciferol)</td>
+                  <td class="p-2">Liposoluble (Apolar)</td>
+                  <td class="p-2">Promueve la absorción de calcio y fósforo en el intestino para mineralizar huesos.</td>
+                  <td class="p-2 text-amber-300">Raquitismo (huesos curvos en niños) y osteomalacia (adultos).</td>
+                  <td class="p-2 text-rose-300">Exceso de calcio en sangre y calcificación de los riñones (nefrocalcinosis).</td>
+                </tr>
+                <tr class="bg-slate-900/50">
+                  <td class="p-2 font-bold text-amber-300">Vitamina E y K</td>
+                  <td class="p-2">Liposolubles (Apolares)</td>
+                  <td class="p-2">E: antioxidante de lípidos de membrana. K: activa factores de coagulación en el hígado.</td>
+                  <td class="p-2 text-amber-300">E: ruptura de glóbulos rojos en prematuros. K: hemorragias por falta de coagulación.</td>
+                  <td class="p-2 text-rose-300">Se almacenan en tejido graso e hígado; exceso de E interfiere con la coagulación.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        `
+      }
+    };
+
+    /***************************************************************************
+     * 20 PREGUNTAS CERRADAS Y 5 ABIERTAS (NIVEL GRADO 11° - PRUEBA SABER 11)
+     ***************************************************************************/
+    const CLOSED_QUESTIONS = [
+      {
+        id: 1,
+        competence: "Uso comprensivo del conocimiento científico",
+        has3D: false,
+        plateTitle: "Polaridad de las Vitaminas: Eliminación en Orina vs. Reserva en el Hígado",
+        stem: "Una persona decide tomar por su cuenta un suplemento que contiene una dosis muy alta de vitamina C (hidrosoluble) y de vitamina A (liposoluble). Después de varias semanas, un examen médico muestra que el exceso de vitamina C fue eliminado casi por completo en la orina sin causar daño, mientras que la vitamina A se acumuló en el hígado provocando dolor de cabeza e inflamación hepática. Teniendo en cuenta la polaridad química vista en clase, ¿por qué ocurre esta diferencia?",
+        options: [
+          "Porque la vitamina C no tiene enlaces químicos y se evapora en la sangre, mientras que la vitamina A se transforma en hierro.",
+          "Porque la vitamina C posee grupos polares (–OH) que le permiten disolverse en el agua y eliminarse por la orina a través de los riñones, mientras que la vitamina A es apolar (soluble en grasas), por lo que no sale en la orina y se acumula en los lípidos del hígado.",
+          "Porque los riñones solo pueden filtrar sustancias grasosas y retienen todas las sustancias solubles en agua.",
+          "Porque la vitamina A se disuelve fácilmente en el agua de la orina, pero el estómago impide que llegue a los riñones."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 2,
+        competence: "Explicación de fenómenos",
+        has3D: true,
+        model3DType: "tpp",
+        plateTitle: "La Vitamina B₁ (Tiamina) como Llave de Entrada al Ciclo de Krebs",
+        stem: "En la respiración celular, la glucosa se divide primero en piruvato durante la glucólisis. Para que ese piruvato pueda entrar a la mitocondria y convertirse en acetil-CoA (iniciando el Ciclo de Krebs para producir mucho ATP), la enzima piruvato deshidrogenasa necesita obligatoriamente una coenzima derivada de la vitamina B₁ (tiamina). Si un paciente tiene una deficiencia grave de vitamina B₁, ¿qué ocurrirá en sus células con el piruvato y la producción de energía?",
+        options: [
+          "El piruvato producirá el triple de ATP dentro del núcleo de la célula sin necesidad de oxígeno.",
+          "El piruvato no podrá entrar al Ciclo de Krebs, por lo que se acumulará convirtiéndose en ácido láctico y las células sufrirán una caída grave en la producción de ATP.",
+          "Las mitocondrias empezarán a fabricar vitamina B₁ a partir del dióxido de carbono que respiramos.",
+          "El piruvato se transformará directamente en fibras de colágeno dentro de la sangre."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 3,
+        competence: "Indagación",
+        has3D: true,
+        model3DType: "ascorbato",
+        plateTitle: "Vitamina C, Hierro (Fe²⁺) y Estabilidad del Colágeno en el Escorbuto",
+        stem: "Antiguamente, los marineros que pasaban meses en alta mar sin comer frutas cítricas ni verduras frescas enfermaban de escorbuto: les sangraban las encías, les salían pequeños puntos de sangre en la piel y sus heridas no cicatrizaban. Los científicos descubrieron que sin vitamina C (ácido ascórbico), el hierro del sitio activo de la enzima prolil hidroxilasa se oxida y deja de funcionar, impidiendo fabricar un colágeno resistente a la temperatura del cuerpo (37 °C). Según esto, ¿cuál es la función química de la vitamina C en la formación del colágeno?",
+        options: [
+          "Unirse como si fuera un ladrillo más para formar la cadena de aminoácidos de la proteína.",
+          "Actuar como agente reductor manteniendo al hierro en su estado activo (Fe²⁺) para que la enzima pueda hidroxilar la prolina y darle firmeza a la triple hélice del colágeno.",
+          "Subir la temperatura de la sangre a 50 °C para que las heridas se cierren por calor.",
+          "Destruir los glóbulos rojos viejos para convertirlos en tejido muscular en las encías."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 4,
+        competence: "Explicación de fenómenos",
+        has3D: false,
+        plateTitle: "Vitamina B₃ (Niacina), Coenzima NAD⁺ y la Enfermedad de la Pelagra",
+        stem: "La vitamina B₃ (niacina) es utilizada por nuestras células para fabricar el NAD⁺ y el NADP⁺, dos coenzimas fundamentales para transportar electrones y producir energía (ATP) en la mitocondria. Cuando una población tiene una alimentación muy pobre en niacina y en el aminoácido triptófano, aparece la pelagra, conocida como la enfermedad de las '3 D': Dermatitis (lesiones en la piel expuesta al sol), Diarrea y Demencia. ¿Por qué la falta de vitamina B₃ golpea principalmente a la piel, el intestino y el cerebro?",
+        options: [
+          "Porque la vitamina B₃ es la grasa principal que recubre por fuera el cabello y las uñas.",
+          "Porque al faltar NAD⁺ cae la producción de ATP y la reparación celular, afectando primero a los órganos que renuevan constantemente sus células (piel e intestino) o que consumen muchísima energía (el cerebro).",
+          "Porque sin niacina el estómago deja de producir agua y la sangre se congela.",
+          "Porque el NAD⁺ solo sirve para dar color oscuro a la piel cuando estamos en la sombra."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 5,
+        competence: "Uso comprensivo del conocimiento científico",
+        has3D: true,
+        model3DType: "calcitriol",
+        plateTitle: "Vitamina D, Absorción Intestinal de Calcio (Ca²⁺) y Mineralización Ósea",
+        stem: "Un niño que recibe muy poca luz solar y cuya dieta carece de lácteos, huevos y pescado empieza a presentar debilidad muscular y piernas arqueadas porque sus huesos están blandos (raquitismo). El pediatra explica que la falta de vitamina D impide que el cuerpo aproveche el calcio de los alimentos. ¿Cómo actúa la vitamina D activa en nuestro organismo para mantener los huesos fuertes?",
+        options: [
+          "Promueve en las células del intestino delgado la fabricación de proteínas transportadoras (como la calbindina) que absorben el calcio (Ca²⁺) y el fósforo de la dieta hacia la sangre para mineralizar los huesos.",
+          "Se convierte directamente en hueso sólido sin necesidad de que el niño consuma calcio en las comidas.",
+          "Hace que los riñones eliminen todo el calcio del cuerpo a través del sudor y la orina.",
+          "Transforma el hierro de la sangre en átomos de calcio dentro de los pulmones."
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 6,
+        competence: "Indagación",
+        has3D: false,
+        plateTitle: "Peligro de las Megadosis: Hipervitaminosis D y Calcificación Renal",
+        stem: "Pensando que 'entre más vitaminas tome, más sanos estarán sus huesos', un adulto consume diariamente durante varios meses dosis exageradas de suplementos de vitamina D (más de 20 veces lo recomendado). Poco después ingresa a urgencias con náuseas, deshidratación, alteraciones cardíacas y cálculos o depósitos de calcio endurecidos dentro de sus riñones (nefrocalcinosis). ¿Qué proceso metabólico causó esta intoxicación por hipervitaminosis D?",
+        options: [
+          "La vitamina D se secó en la garganta impidiendo el paso del agua hacia el estómago.",
+          "El exceso de vitamina D forzó una absorción descontrolada de calcio en el intestino y salida de calcio de los huesos, elevando tanto el calcio en la sangre (hipercalcemia) que terminó precipitándose y calcificando tejidos blandos como los riñones.",
+          "La vitamina D destruyó todas las grasas del cuerpo haciendo que el calcio desapareciera de la sangre.",
+          "Como la vitamina D es hidrosoluble, se eliminó en 5 minutos por la orina sin dejar rastro."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 7,
+        competence: "Explicación de fenómenos",
+        has3D: false,
+        plateTitle: "Absorción de Vitamina B₁₂, Factor Intrínseco y Anemia Perniciosa",
+        stem: "Para que la vitamina B₁₂ (cobalamina) de los alimentos pueda absorberse al final del intestino delgado, necesita unirse primero a una proteína especial llamada Factor Intrínseco, la cual es producida por las células del estómago. Si una persona sufre una enfermedad gástrica en la que su estómago deja de fabricar Factor Intrínseco, ¿qué problema de salud desarrollará con el tiempo aunque coma carne y lácteos ricos en B₁₂?",
+        options: [
+          "Desarrollará anemia perniciosa (glóbulos rojos gigantes e inmaduros por fallas en la síntesis de ADN) y daños en la mielina de sus nervios, ya que la vitamina B₁₂ no podrá absorberse hacia la sangre.",
+          "Sufrirá una intoxicación aguda por exceso de vitamina B₁₂ acumulada en el cerebro.",
+          "Sus huesos crecerán el doble de rápido porque el Factor Intrínseco frena al calcio.",
+          "Desarrollará ceguera nocturna inmediata porque el Factor Intrínseco forma la retina."
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 8,
+        competence: "Uso comprensivo del conocimiento científico",
+        has3D: true,
+        model3DType: "retinal",
+        plateTitle: "Vitamina A (Retinal) y el Mecanismo de la Visión en la Penumbra",
+        stem: "Uno de los primeros síntomas cuando a un estudiante le falta vitamina A en su alimentación es la 'ceguera nocturna': ve bien de día, pero le cuesta mucho distinguir objetos cuando entra a un salón oscuro o al anochecer. En la retina del ojo tenemos células llamadas bastones que contienen una proteína (rodopsina) unida a un derivado de la vitamina A llamado 11-cis-retinal. ¿Qué papel cumple esta molécula cuando entra un rayo de luz al ojo?",
+        options: [
+          "Congela el agua del ojo para que la luz rebote como en un espejo hacia afuera.",
+          "Al recibir un fotón de luz, el 11-cis-retinal cambia su forma espacial (se isomeriza a todo-trans-retinal), lo que activa a la proteína de la retina para enviar el impulso nervioso visual hacia el cerebro.",
+          "Se quema produciendo calor para iluminar el interior del globo ocular en la oscuridad.",
+          "Disuelve el cristalino del ojo para que entren más vitaminas desde el aire."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 9,
+        competence: "Explicación de fenómenos",
+        has3D: false,
+        plateTitle: "Vitamina K, Activación de la Protrombina y Coagulación de la Sangre",
+        stem: "Cuando nos hacemos una herida en la piel, en pocos minutos se forma una red de fibrina (un coágulo) que detiene el sangrado. Para que esto funcione, el hígado necesita de la vitamina K como cofactor para modificar químicamente a los factores de coagulación (como la protrombina), agregándoles grupos carboxilo adicionales que les permiten sujetar iones de calcio (Ca²⁺) y pegarse a las plaquetas. ¿Qué le ocurrirá a un paciente que tiene una deficiencia severa de vitamina K?",
+        options: [
+          "Su sangre se coagulará dentro de las venas formando trombos sólidos instantáneamente.",
+          "Sus factores de coagulación saldrán inactivos del hígado (no podrán fijar calcio ni unirse a las plaquetas), por lo que sufrirá hemorragias prolongadas y dificultad para detener cualquier sangrado.",
+          "Perderá la vista en la oscuridad pero sus heridas cicatrizarán en un segundo.",
+          "Sus glóbulos blancos dejarán de producir anticuerpos contra las gripes."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 10,
+        competence: "Indagación",
+        has3D: false,
+        plateTitle: "Digestión de Grasas, Sales Biliares y Absorción de Vitaminas Liposolubles",
+        stem: "A un paciente con una obstrucción en los conductos biliares no le llegan sales biliares al intestino delgado cuando come, por lo que no puede emulsionar ni digerir bien las grasas de los alimentos. Si este problema dura varios meses sin tratamiento, ¿cuál de los siguientes grupos de vitaminas tendrá mayor dificultad para absorberse en su intestino?",
+        options: [
+          "Únicamente la vitamina C y la vitamina B₁, porque necesitan grasa para disolverse.",
+          "Las vitaminas liposolubles (A, D, E y K), porque al ser moléculas apolares necesitan disolverse en las micelas formadas por las sales biliares y los lípidos para poder entrar a las células intestinales.",
+          "Todas las vitaminas del complejo B, porque se transportan exclusivamente dentro del colesterol.",
+          "Ninguna vitamina se verá afectada, porque todas se absorben directamente en la boca."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 11,
+        competence: "Uso comprensivo del conocimiento científico",
+        has3D: true,
+        model3DType: "plp",
+        plateTitle: "Vitamina B₆ (Piridoxina) y la Síntesis del Neurotransmisor GABA",
+        stem: "En el cerebro humano existe un equilibrio entre señales que activan a las neuronas (como el glutamato) y señales que las calman e inhiben (como el neurotransmisor GABA). La enzima que transforma el glutamato en GABA necesita como coenzima a la vitamina B₆ activa (fosfato de piridoxal, PLP). Si un paciente toma un medicamento (como la isoniazida) que inactiva a la vitamina B₆ y no recibe suplemento, ¿por qué puede sufrir crisis de hiperexcitabilidad neuronal y convulsiones?",
+        options: [
+          "Porque al faltar la coenzima de la vitamina B₆ disminuye la producción del neurotransmisor calmante GABA, dejando a las neuronas del cerebro sobreexcitadas y sin freno.",
+          "Porque la vitamina B₆ tapa las arterias del cerebro impidiendo que llegue oxígeno.",
+          "Porque sin vitamina B₆ el cerebro convierte toda la glucosa en grasa sólida.",
+          "Porque el GABA destruye los huesos del cráneo cuando hay mucha vitamina B₆."
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 12,
+        competence: "Explicación de fenómenos",
+        has3D: false,
+        plateTitle: "Vitamina E (Tocoferol): El Escudo Antioxidante de las Membranas Celulares",
+        stem: "Las membranas de nuestras células (como las de los glóbulos rojos) están formadas por una doble capa de fosfolípidos con ácidos grasos que pueden dañarse fácilmente cuando son atacados por 'radicales libres' del oxígeno (un proceso dañino llamado peroxidación lipídica, parecido a cuando una grasa se pone rancia). ¿Por qué la estructura liposoluble de la vitamina E (alfa-tocoferol) es ideal para proteger las membranas celulares contra este daño?",
+        options: [
+          "Porque al ser liposoluble se ubica directamente en el interior graso de la membrana celular, donde cede un átomo de hidrógeno para neutralizar a los radicales libres e impedir que rompan la membrana.",
+          "Porque flota disuelta en la orina lejos de las células y nunca toca las grasas.",
+          "Porque convierte a los fosfolípidos de la membrana en almidón resistente al oxígeno.",
+          "Porque congela el citoplasma celular para que el oxígeno no pueda entrar al glóbulo rojo."
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 13,
+        competence: "Indagación",
+        has3D: false,
+        plateTitle: "El Caso de la Clara de Huevo Cruda: Avidina vs. Biotina (Vitamina B₇)",
+        stem: "Un joven deportista decide tomar todos los días batidos con varias claras de huevo crudas pensando que así asimilará mejor las proteínas. Después de dos meses empieza a presentar caída del cabello, descamación en la piel, cansancio extremo y baja glucosa en ayunas. Su profesor de biología le explica que la clara de huevo cruda contiene una proteína llamada avidina, la cual atrapa en el intestino a la vitamina B₇ (biotina) e impide que se absorba. ¿Qué debe hacer el joven con los huevos para evitar esta deficiencia de biotina sin dejar de consumirlos?",
+        options: [
+          "Agregarles azúcar refinada cruda para que la biotina se vuelva liposoluble.",
+          "Cocinar las claras de huevo, ya que el calor desnaturaliza (cambia la estructura) de la proteína avidina, impidiendo que atrape a la biotina y permitiendo su absorción normal.",
+          "Tomar las claras crudas mezcladas con aceite mineral para bloquear todo el intestino.",
+          "Congelar las claras crudas durante 5 minutos para que la avidina se transforme en vitamina C."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 14,
+        competence: "Explicación de fenómenos",
+        has3D: false,
+        plateTitle: "Vitamina B₂ (Riboflavina) y la Coenzima FAD en la Mitocondria",
+        stem: "La vitamina B₂ (riboflavina) forma parte del grupo prostético FAD, una molécula que se une al Complejo II de la cadena respiratoria mitocondrial (la enzima succinato deshidrogenasa del Ciclo de Krebs). En ese punto, el FAD recibe 2 electrones y 2 protones convirtiéndose en FADH₂ para luego impulsar la síntesis de ATP. ¿Qué consecuencia tendrá a nivel celular una deficiencia marcada de vitamina B₂ (arriboflavinosis)?",
+        options: [
+          "Se reducirá la eficiencia del Ciclo de Krebs y de la cadena de transporte de electrones mitocondrial al faltar FAD, afectando la renovación de tejidos como los labios (boqueras o queilosis) y la lengua.",
+          "Las células empezarán a realizar fotosíntesis usando la luz del salón de clases.",
+          "El ADN celular se convertirá en grasa saturada dentro del aparato de Golgi.",
+          "Aumentará al máximo la absorción de calcio en los huesos largos de las piernas."
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 15,
+        competence: "Uso comprensivo del conocimiento científico",
+        has3D: true,
+        model3DType: "coenzima_a",
+        plateTitle: "Vitamina B₅ (Ácido Pantoténico) y la Coenzima A en el Metabolismo",
+        stem: "El ácido pantoténico (vitamina B₅) es indispensable para que nuestras células fabriquen la Coenzima A (CoA-SH). Esta molécula se encarga de sujetar grupos acetilo mediante un enlace químico rico en energía (enlace tioéster con azufre) formando el famoso Acetil-CoA. ¿Por qué el Acetil-CoA es considerado una 'encrucijada clave' del metabolismo humano?",
+        options: [
+          "Porque conecta la degradación de carbohidratos y grasas con el Ciclo de Krebs para obtener energía, y también sirve como bloque de construcción para sintetizar ácidos grasos y colesterol.",
+          "Porque solo se utiliza una vez al año para formar el esmalte de los dientes.",
+          "Porque su única función es salir por el sudor para enfriar la piel cuando corremos.",
+          "Porque reemplaza al oxígeno cuando sumergimos la cabeza debajo del agua."
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 16,
+        competence: "Indagación",
+        has3D: false,
+        plateTitle: "La Excepción entre las Hidrosolubles: Toxicidad por Megadosis de Vitamina B₆",
+        stem: "Aunque sabemos que las vitaminas hidrosolubles suelen ser seguras porque su exceso se elimina en la orina, existe una excepción importante cuando se abusa de pastillas concentradas: si una persona consume megadosis diarias de vitamina B₆ (piridoxina, más de 1.000 veces lo normal) durante varios meses, los riñones no logran dar abasto y la vitamina B₆ sin activar se acumula, bloqueando a la forma activa y dañando los nervios sensitivos (causando pérdida de equilibrio y hormigueo en manos y pies). ¿Qué enseñanza nos deja este fenómeno?",
+        options: [
+          "Que ninguna vitamina del complejo B debe consumirse jamás en los alimentos naturales.",
+          "Que incluso una vitamina hidrosoluble puede causar toxicidad (hipervitaminosis) si se consume en megadosis farmacéuticas extremas que superan la capacidad de procesamiento y eliminación del cuerpo.",
+          "Que la vitamina B₆ es en realidad una grasa apolar idéntica al colesterol.",
+          "Que los nervios humanos no necesitan ninguna vitamina para transmitir impulsos."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 17,
+        competence: "Explicación de fenómenos",
+        has3D: false,
+        plateTitle: "Vitamina B₉ (Ácido Fólico), Síntesis de ADN y Prevención en el Embarazo",
+        stem: "Los médicos recomiendan a todas las mujeres que planean un embarazo tomar suplementos de ácido fólico (vitamina B₉) desde antes de la concepción y durante los primeros meses de gestación. Esta medida previene malformaciones graves en el bebé llamadas defectos del cierre del tubo neural (como la espina bífida). Desde el punto de vista de la biología celular, ¿por qué el embrión necesita tanto ácido fólico en sus primeras cuatro semanas?",
+        options: [
+          "Porque el ácido fólico sirve como capa de grasa térmica para calentar el útero materno.",
+          "Porque en esas semanas las células del embrión se dividen a gran velocidad para formar el cerebro y la médula espinal, y el ácido fólico es indispensable para fabricar los nucleótidos (como la timidina) necesarios para copiar el ADN en cada división celular.",
+          "Porque el ácido fólico impide que el corazón del bebé lata durante el primer mes.",
+          "Porque sin vitamina B₉ la madre no puede respirar oxígeno por los pulmones."
+        ],
+        correctIndex: 1
+      },
+      {
+        id: 18,
+        competence: "Uso comprensivo del conocimiento científico",
+        has3D: false,
+        plateTitle: "Fisiopatología del Beriberi Húmedo: Corazón y Vasos Sanguíneos sin ATP",
+        stem: "En la deficiencia severa de vitamina B₁ (tiamina), existe una forma clínica llamada 'beriberi húmedo', en la cual el paciente presenta piernas muy hinchadas por retención de líquido (edema), dilatación de los vasos sanguíneos y cansancio extremo del corazón (insuficiencia cardíaca). ¿Cómo se relaciona la función metabólica de la vitamina B₁ con el fallo del músculo cardíaco?",
+        options: [
+          "El corazón es un músculo que trabaja sin descanso y requiere enormes cantidades de ATP; al faltar vitamina B₁ se frena el Ciclo de Krebs, el músculo cardíaco se queda sin energía suficiente para bombear la sangre y los vasos sanguíneos pierden su tono normal.",
+          "La vitamina B₁ forma tapones de grasa que cierran las venas de los brazos.",
+          "La falta de vitamina B₁ hace que los huesos de las piernas se disuelvan en el agua.",
+          "El beriberi húmedo ocurre únicamente cuando una persona bebe más de 10 litros de agua al día."
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 19,
+        competence: "Indagación",
+        has3D: false,
+        plateTitle: "Hipervitaminosis A en el Embarazo: El Riesgo Teratogénico de los Retinoides",
+        stem: "Algunos medicamentos fuertes contra el acné severo (como la isotretinoína) son derivados químicos de la vitamina A. En los envases de estos fármacos aparece una advertencia obligatoria que prohíbe su uso durante el embarazo, al igual que las megadosis de vitamina A, porque son 'teratogénicos' (causan malformaciones en la cara, el corazón y el sistema nervioso del feto). ¿Por qué un exceso de derivados de la vitamina A altera la formación de los órganos del embrión?",
+        options: [
+          "Porque en cantidades normales el ácido retinoico actúa como una señal química ordenada que guía qué genes deben activarse para formar cada parte del embrión, pero en exceso desordena la expresión de esos genes (genes Hox) alterando el desarrollo de los tejidos.",
+          "Porque la vitamina A es un ácido corrosivo que quema directamente la piel de la madre.",
+          "Porque el exceso de vitamina A convierte el líquido amniótico en hielo sólido.",
+          "Porque los retinoides eliminan todo el calcio de los dientes de la madre en una hora."
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 20,
+        competence: "Uso comprensivo del conocimiento científico",
+        has3D: false,
+        plateTitle: "Trabajo en Equipo: Cómo la Vitamina C Mejora la Absorción del Hierro",
+        stem: "Cuando un estudiante presenta anemia por falta de hierro, el nutricionista le recomienda comer lentejas, frijoles o espinacas acompañados de un vaso de limonada o jugo de naranja natural (ricos en vitamina C), ya que el hierro de origen vegetal se encuentra en estado férrico (Fe³⁺), el cual es poco soluble en el intestino. ¿Qué hace químicamente la vitamina C en el intestino para aumentar la absorción de ese hierro?",
+        options: [
+          "Convierte el hierro de las lentejas en moléculas de grasa para que floten en el estómago.",
+          "Actúa como agente reductor convirtiendo el hierro férrico insoluble (Fe³⁺) en hierro ferroso soluble (Fe²⁺), que es la forma química que las células del intestino pueden absorber fácilmente hacia la sangre.",
+          "Destruye las proteínas de las lentejas para que el hierro se evapore como un gas.",
+          "Bloquea el paso del hierro hacia la sangre para que se elimine todo en las heces."
+        ],
+        correctIndex: 1
+      }
+    ];
+
+    const OPEN_QUESTIONS = [
+      {
+        id: 21,
+        competence: "Explicación de fenómenos (Química y Biología integradas)",
+        plateTitle: "Pregunta Abierta 1: Polaridad Química vs. Riesgo de Hipervitaminosis",
+        stem: "PREGUNTA ABIERTA 1 (POLARIDAD Y SALUD):\nCon base en lo trabajado en clase y en la Lectura 1, explica con tus propias palabras por qué consumir en exceso vitaminas liposolubles (como la A o la D) es mucho más peligroso y puede causar una intoxicación (hipervitaminosis), mientras que consumir un exceso moderado de vitaminas hidrosolubles (como la C o la B₁) rara vez intoxica al organismo. En tu respuesta menciona cómo influye su polaridad (solubilidad en agua o en grasa), dónde se almacenan y cómo se eliminan por los riñones.",
+        keywords: ["polaridad", "liposolubles", "hidrosolubles", "agua", "grasa", "orina", "higado", "riñon", "riñones", "almacenan", "exceso", "toxicidad", "hipervitaminosis"]
+      },
+      {
+        id: 22,
+        competence: "Uso comprensivo del conocimiento científico",
+        plateTitle: "Pregunta Abierta 2: El Papel de la Vitamina C en el Colágeno y el Escorbuto",
+        stem: "PREGUNTA ABIERTA 2 (VITAMINA C Y TEJIDOS):\nUn paciente que lleva muchos meses sin consumir frutas ni verduras frescas presenta sangrado en las encías, debilidad en los vasos sanguíneos y mala cicatrización de sus heridas (escorbuto). Explica paso a paso por qué la falta de vitamina C (ácido ascórbico) produce estos síntomas, mencionando qué proteína del tejido conectivo se ve afectada, qué papel cumple el hierro (Fe²⁺) en la enzima que la fabrica y qué le pasa a la firmeza de los tejidos.",
+        keywords: ["vitamina", "ascorbico", "colageno", "hierro", "enzima", "prolina", "hidroxilasa", "encias", "vasos", "sangrado", "cicatrizacion", "escorbuto", "tejido"]
+      },
+      {
+        id: 23,
+        competence: "Indagación y Metabolismo Energético",
+        plateTitle: "Pregunta Abierta 3: Deficiencia de Vitamina B₁ (Tiamina), ATP y Ácido Láctico",
+        stem: "PREGUNTA ABIERTA 3 (RESPIRACIÓN CELULAR Y VITAMINA B₁):\nExplica por qué cuando a una persona le falta la vitamina B₁ (tiamina), sus células no pueden aprovechar bien la glucosa para producir energía (ATP) en la mitocondria y en su lugar acumulan ácido láctico en la sangre. En tu respuesta menciona qué ocurre con el piruvato antes de entrar al Ciclo de Krebs y por qué el cerebro y el corazón son los órganos que más sufren en el beriberi.",
+        keywords: ["tiamina", "piruvato", "krebs", "mitocondria", "atp", "energia", "lactico", "glucosa", "cerebro", "corazon", "beriberi", "coenzima", "acetil"]
+      },
+      {
+        id: 24,
+        competence: "Explicación de fenómenos",
+        plateTitle: "Pregunta Abierta 4: Trabajo en Equipo e Importancia de las Vitaminas B₉ y B₁₂",
+        stem: "PREGUNTA ABIERTA 4 (DIVISIÓN CELULAR Y SISTEMA NERVIOSO):\nLas vitaminas B₉ (ácido fólico) y B₁₂ (cobalamina) son indispensables para la formación de la sangre y el sistema nervioso. Explica: 1) ¿Por qué la falta de cualquiera de las dos impide que el ADN se copie bien y produce glóbulos rojos gigantes (anemia megaloblástica)?, y 2) ¿Qué función adicional cumple la vitamina B₁₂ recubriendo los nervios (mielina) y por qué necesita del estómago (Factor Intrínseco) para absorberse?",
+        keywords: ["folico", "cobalamina", "adn", "globulos", "rojos", "anemia", "mielina", "nervios", "estomago", "intrinseco", "division", "celular", "absorcion"]
+      },
+      {
+        id: 25,
+        competence: "Indagación y Pensamiento Crítico en Salud",
+        plateTitle: "Pregunta Abierta 5: Reflexión Crítica sobre el Abuso de Suplementos Vitamínicos",
+        stem: "PREGUNTA ABIERTA 5 (EQUILIBRIO Y HOMEOSTASIS):\nMuchas personas compran tarros de vitaminas y toman dosis altísimas sin fórmula médica creyendo que 'entre más vitaminas tome el cuerpo, más energía y salud tendrá'. Escribe una recomendación científica para tus compañeros de colegio explicando por qué esa creencia es falsa. Argumenta por qué las vitaminas no son combustibles ilimitados y pon como ejemplo los daños que causa el exceso de vitamina D en los riñones o el exceso de vitamina A en el hígado y el embarazo.",
+        keywords: ["exceso", "suplementos", "equilibrio", "homeostasis", "salud", "riñones", "calcio", "higado", "embarazo", "hipervitaminosis", "dosis", "medico", "alimentos"]
+      }
+    ];
+
+    const ALL_QUESTIONS = [...CLOSED_QUESTIONS, ...OPEN_QUESTIONS];
+    const NC_COUNT = CLOSED_QUESTIONS.length; // 20
+    const NA_COUNT = OPEN_QUESTIONS.length;   // 5
+
+    let appState = {
+      studentName: "",
+      studentId: "",
+      examStarted: false,
+      examFinished: false,
+      startTimeISO: "",
+      endTimeISO: "",
+      currentQuestionIndex: 0,
+      remainingSeconds: 90,
+      timerInterval: null,
+      closedAnswers: new Array(NC_COUNT).fill(null),
+      openAnswers: new Array(NA_COUNT).fill(""),
+      openValidFlags: new Array(NA_COUNT).fill(false),
+      penalties: [],
+      penaltyPoints: 0.0,
+      lastUserActivity: Date.now(),
+      lastMicPenaltyTime: 0,
+      lastTabPenaltyTime: 0,
+      plateDataUrls: {},
+      bannerDataUrl: "",
+      threeAnimFrameId: null,
+      splitPanelVisible: false
+    };
+
+    /***************************************************************************
+     * BANNER OFICIAL EN HTML5 CANVAS
+     ***************************************************************************/
+    function generateOfficialBannerDataURL() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1200;
+      canvas.height = 240;
+      const ctx = canvas.getContext('2d');
+
+      const grad = ctx.createLinearGradient(0, 0, 1200, 240);
+      grad.addColorStop(0, '#06152d');
+      grad.addColorStop(0.5, '#0f2b54');
+      grad.addColorStop(1, '#081b38');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1200, 240);
+
+      ctx.fillStyle = '#dfb235';
+      ctx.fillRect(0, 0, 1200, 7);
+      ctx.fillRect(0, 233, 1200, 7);
+
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.14)';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.arc(1080, 120, 35 + i * 26, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.save();
+      ctx.translate(110, 120);
+      ctx.beginPath();
+      ctx.arc(0, 0, 74, 0, Math.PI * 2);
+      ctx.fillStyle = '#06152d';
+      ctx.fill();
+      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = '#dfb235';
+      ctx.stroke();
+
+      ctx.fillStyle = '#dfb235';
+      ctx.beginPath();
+      ctx.moveTo(-15, 42);
+      ctx.lineTo(-8, -24);
+      ctx.lineTo(8, -24);
+      ctx.lineTo(15, 42);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(253, 224, 71, 0.35)';
+      ctx.beginPath(); ctx.moveTo(0, -30); ctx.lineTo(-52, -48); ctx.lineTo(-52, -12); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(0, -30); ctx.lineTo(52, -48); ctx.lineTo(52, -12); ctx.closePath(); ctx.fill();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath(); ctx.arc(0, -30, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('THE LIGHTHOUSE', 0, 58);
+      ctx.restore();
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#dfb235';
+      ctx.font = 'bold 15px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('FUNDACIÓN EDUCATIVA MANANTIAL DE DIOS • THE LIGHTHOUSE SCHOOL', 215, 48);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 31px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('GIMNASIO CRISTIANO FARO DE LUZ', 215, 88);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 20px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('TALLER EVALUATIVO INTEGRADO: VITAMINAS, METABOLISMO Y SALUD', 215, 125);
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '600 15px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('DOCENTE: CRISTIAN DAVID AYAZO   |   GRADO: 11°   |   BIOLOGÍA Y QUÍMICA', 215, 158);
+
+      ctx.fillStyle = 'rgba(200, 157, 40, 0.22)';
+      ctx.fillRect(215, 176, 540, 32);
+      ctx.strokeStyle = '#dfb235';
+      ctx.strokeRect(215, 176, 540, 32);
+      ctx.fillStyle = '#fde047';
+      ctx.font = 'bold 13px monospace';
+      ctx.fillText('CÓDIGO: F-GA2-004 | VERSIÓN: 2 | ID: TALLER-VITAMINAS-G11-2026', 230, 197);
+
+      return canvas.toDataURL('image/png');
+    }
+
+    /***************************************************************************
+     * GENERADOR DE LÁMINAS CIENTÍFICAS PNG (900×600 px) CLARAS PARA GRADO 11°
+     ***************************************************************************/
+    function generateScientificPlatePNG(questionObj) {
+      const qId = questionObj.id;
+      if (appState.plateDataUrls[qId]) return appState.plateDataUrls[qId];
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 900;
+      canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+
+      const bgGrad = ctx.createLinearGradient(0, 0, 900, 600);
+      bgGrad.addColorStop(0, '#07162c');
+      bgGrad.addColorStop(0.5, '#0d254c');
+      bgGrad.addColorStop(1, '#061224');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 900, 600);
+
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= 900; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 600); ctx.stroke(); }
+      for (let y = 0; y <= 600; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(900, y); ctx.stroke(); }
+
+      drawRoundedBox(ctx, 20, 18, 860, 66, 10, '#0f2b54', '#dfb235', 2);
+      ctx.fillStyle = '#fde047';
+      ctx.font = 'bold 14px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`INFOGRAFÍA DEL TALLER #${String(qId).padStart(2, '0')} • CIENCIAS NATURALES GRADO 11° • FARO DE LUZ`, 38, 43);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 18px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(questionObj.plateTitle.substring(0, 72), 38, 69);
+
+      ctx.save();
+      drawGrade11InfographicPlate(ctx, qId);
+      ctx.restore();
+
+      drawRoundedBox(ctx, 20, 542, 860, 40, 8, '#081b38', '#38bdf8', 1.5);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '13px monospace';
+      ctx.fillText(`LÁMINA DIDÁCTICA ${qId}.0 | PROF. CRISTIAN DAVID AYAZO | BIOLOGÍA Y QUÍMICA GRADO 11°`, 36, 567);
+
+      const dataUrl = canvas.toDataURL('image/png');
+      appState.plateDataUrls[qId] = dataUrl;
+      return dataUrl;
+    }
+
+    function drawRoundedBox(ctx, x, y, w, h, r, fill, stroke, lineW = 2) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lineW; ctx.stroke(); }
+    }
+
+    function drawArrow(ctx, x1, y1, x2, y2, color = '#fbbf24', width = 3) {
+      const headlen = 11;
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function wrapTextCanvas(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+          ctx.fillText(line, x, y);
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
+    }
+
+    function drawGrade11InfographicPlate(ctx, qId) {
+      const cardsData = {
+        1: [
+          ["1. VITAMINA C (Hidrosoluble)", "Posee grupos polares (–OH) que se disuelven en el agua de la sangre."],
+          ["2. VITAMINA A (Liposoluble)", "Molécula apolar soluble en grasas; no se disuelve en el agua de la orina."],
+          ["3. DESTINO DE LA VITAMINA C", "El exceso se filtra en los riñones y sale rápidamente por la orina."],
+          ["4. DESTINO DE LA VITAMINA A", "Se guarda en el hígado y tejido graso; su exceso causa hipervitaminosis."]
+        ],
+        2: [
+          ["1. GLUCÓLISIS EN EL CITOSOL", "La glucosa se parte en moléculas de Piruvato (3 carbonos)."],
+          ["2. ACCIÓN DE LA VITAMINA B₁", "Su coenzima TPP permite convertir el Piruvato en Acetil-CoA."],
+          ["3. PRODUCCIÓN DE ENERGÍA", "El Acetil-CoA entra al Ciclo de Krebs en la mitocondria para dar ATP."],
+          ["4. ¿QUÉ PASA SI FALTA B₁?", "El piruvato no entra a la mitocondria, se vuelve ácido láctico y falta ATP."]
+        ],
+        3: [
+          ["1. SÍNTESIS DE COLÁGENO", "El colágeno da firmeza a las encías, la piel y los vasos sanguíneos."],
+          ["2. ENZIMA PROLIL HIDROXILASA", "Necesita hierro activo (Fe²⁺) para poner grupos –OH en el colágeno."],
+          ["3. PAPEL DE LA VITAMINA C", "Mantiene al hierro reducido en estado Fe²⁺ para que la enzima funcione."],
+          ["4. ESCORBUTO (SIN VITAMINA C)", "El colágeno queda débil: sangran las encías y las heridas no cierran."]
+        ],
+        4: [
+          ["1. VITAMINA B₃ Y TRIPTÓFANO", "Sirven para fabricar las coenzimas NAD⁺ y NADP⁺ en las células."],
+          ["2. FUNCIÓN DEL NAD⁺", "Lleva electrones a la mitocondria para producir ATP y reparar ADN."],
+          ["3. TEJIDOS DE ALTO CONSUMO", "La piel, el intestino y el cerebro consumen gran cantidad de energía."],
+          ["4. PELAGRA (LAS 3 D)", "Su falta produce Dermatitis al sol, Diarrea e inflamación cerebral (Demencia)."]
+        ],
+        5: [
+          ["1. VITAMINA D ACTIVA", "Se activa con ayuda de la luz solar, el hígado y los riñones."],
+          ["2. FUNCIÓN EN EL INTESTINO", "Ordena fabricar proteínas que absorben el Calcio (Ca²⁺) de la comida."],
+          ["3. MINERALIZACIÓN DEL HUESO", "El calcio absorbido viaja a los huesos para darles dureza y firmeza."],
+          ["4. RAQUITISMO (DÉFICIT DE D)", "Sin vitamina D no entra calcio a la sangre y los huesos se curvan."]
+        ],
+        6: [
+          ["1. ABUSO DE VITAMINA D", "Tomar megadosis durante meses acumula vitamina D en el cuerpo."],
+          ["2. EXCESO DE CALCIO (Ca²⁺)", "El intestino absorbe demasiado calcio hacia la sangre (hipercalcemia)."],
+          ["3. SATURACIÓN EN LA SANGRE", "El calcio y el fósforo superan su límite y forman cristales sólidos."],
+          ["4. DAÑO EN LOS RIÑONES", "El calcio se deposita en los riñones causando piedras y nefrocalcinosis."]
+        ],
+        7: [
+          ["1. VITAMINA B₁₂ EN LA DIETA", "Presente en carnes, huevos y lácteos; clave para el ADN y los nervios."],
+          ["2. EL FACTOR INTRÍNSECO", "Proteína fabricada por el estómago que se une a la B₁₂ para protegerla."],
+          ["3. ABSORCIÓN EN EL INTESTINO", "Solo cuando está unida al Factor Intrínseco puede pasar a la sangre."],
+          ["4. ANEMIA PERNICIOSA", "Si el estómago no produce Factor Intrínseco, la B₁₂ no se absorbe."]
+        ],
+        8: [
+          ["1. BASTONES DE LA RETINA", "Células del ojo encargadas de permitirnos ver en lugares con poca luz."],
+          ["2. RODOPSINA + RETINAL (Vit. A)", "El 11-cis-retinal (derivado de la vitamina A) capta los rayos de luz."],
+          ["3. CAMBIO DE FORMA CON LA LUZ", "La luz cambia la forma del retinal y envía la señal visual al cerebro."],
+          ["4. CEGUERA NOCTURNA", "Si falta vitamina A, no se forma retinal y no vemos en la penumbra."]
+        ],
+        9: [
+          ["1. HERIDA EN UN VASO SANGUÍNEO", "El cuerpo necesita activar la protrombina para formar un coágulo."],
+          ["2. ACCIÓN DE LA VITAMINA K", "En el hígado, ayuda a poner 'ganchos' (grupos carboxilo) a la protrombina."],
+          ["3. UNIÓN CON EL CALCIO (Ca²⁺)", "Esos ganchos sujetan calcio y pegan los factores a las plaquetas."],
+          ["4. DÉFICIT DE VITAMINA K", "Los factores no pueden sujetar calcio y ocurren hemorragias."]
+        ],
+        10: [
+          ["1. VITAMINAS A, D, E y K", "Son liposolubles (apolares): solo se disuelven en grasas y aceites."],
+          ["2. PAPEL DE LAS SALES BILIARES", "El hígado envía bilis al intestino para emulsionar las grasas en micelas."],
+          ["3. ENTRADA AL INTESTINO", "Las vitaminas liposolubles viajan dentro de esas gotitas de grasa."],
+          ["4. OBSTRUCCIÓN BILIAR", "Sin bilis no se digieren las grasas y no se absorben A, D, E ni K."]
+        ]
+      };
+
+      const fallbackCards = [
+        [`1. ESTRUCTURA Y POLARIDAD (#${qId})`, "Las propiedades químicas definen cómo viaja la vitamina en el cuerpo."],
+        ["2. ACCIÓN COMO COENZIMA", "Participa activando enzimas clave del metabolismo celular para dar salud."],
+        ["3. PROBLEMA POR DEFICIENCIA", "Cuando falta en la dieta se frena la ruta metabólica (Avitaminosis)."],
+        ["4. EQUILIBRIO Y HOMEOSTASIS", "Una alimentación balanceada evita tanto las carencias como el exceso."]
+      ];
+
+      const items = cardsData[qId] || fallbackCards;
+      const positions = [
+        { x: 40, y: 105, c: '#38bdf8', bg: 'rgba(14, 116, 144, 0.32)' },
+        { x: 465, y: 105, c: '#fbbf24', bg: 'rgba(180, 83, 9, 0.32)' },
+        { x: 465, y: 330, c: '#34d399', bg: 'rgba(6, 95, 70, 0.32)' },
+        { x: 40, y: 330, c: '#fb7185', bg: 'rgba(159, 18, 57, 0.32)' }
+      ];
+
+      positions.forEach((pos, idx) => {
+        drawRoundedBox(ctx, pos.x, pos.y, 395, 190, 14, pos.bg, pos.c, 2.5);
+        ctx.fillStyle = pos.c;
+        ctx.font = 'bold 17px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText(items[idx][0], pos.x + 22, pos.y + 42);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '16px "Plus Jakarta Sans", sans-serif';
+        wrapTextCanvas(ctx, items[idx][1], pos.x + 22, pos.y + 82, 350, 26);
+      });
+
+      drawArrow(ctx, 440, 200, 460, 200, '#fbbf24', 3.5);
+      drawArrow(ctx, 660, 300, 660, 325, '#34d399', 3.5);
+      drawArrow(ctx, 460, 425, 440, 425, '#fb7185', 3.5);
+    }
+
+    /***************************************************************************
+     * VISOR MOLECULAR 3D INTERACTIVO (THREE.JS CPK)
+     ***************************************************************************/
+    function stopThreeViewer() {
+      if (appState.threeAnimFrameId) {
+        cancelAnimationFrame(appState.threeAnimFrameId);
+        appState.threeAnimFrameId = null;
+      }
+      const mount = document.getElementById('threeCanvasMount');
+      if (mount) mount.innerHTML = '';
+    }
+
+    function initThreeMolecularViewer(modelType) {
+      stopThreeViewer();
+      const mount = document.getElementById('threeCanvasMount');
+      if (!mount || typeof THREE === 'undefined') return;
+
+      try {
+        const width = mount.clientWidth || 320;
+        const height = mount.clientHeight || 270;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+        camera.position.z = 11;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        mount.appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+        dirLight.position.set(8, 10, 10);
+        scene.add(dirLight);
+
+        const moleculeGroup = new THREE.Group();
+        scene.add(moleculeGroup);
+
+        const CPK = { C: 0x64748b, O: 0xef4444, N: 0x3b82f6, P: 0xf97316, S: 0xeab308 };
+        const atoms = [];
+        const bonds = [];
+
+        if (modelType === 'tpp') {
+          atoms.push(
+            { x: -2.6, y: 0.5, z: 0, r: 0.48, c: CPK.N },
+            { x: -1.6, y: 1.2, z: 0.2, r: 0.48, c: CPK.C },
+            { x: -0.8, y: 0.3, z: 0, r: 0.48, c: CPK.C },
+            { x: 0.4, y: 0.5, z: 0.3, r: 0.56, c: CPK.S },
+            { x: 1.5, y: -0.3, z: 0, r: 0.48, c: CPK.C },
+            { x: 2.6, y: 0.2, z: -0.2, r: 0.58, c: CPK.P },
+            { x: 3.5, y: 1.1, z: 0.2, r: 0.40, c: CPK.O },
+            { x: 3.4, y: -0.9, z: -0.3, r: 0.40, c: CPK.O }
+          );
+        } else if (modelType === 'ascorbato') {
+          atoms.push(
+            { x: -1.2, y: 0.8, z: 0, r: 0.48, c: CPK.C },
+            { x: 0.1, y: 1.1, z: 0.1, r: 0.48, c: CPK.C },
+            { x: 0.9, y: 0.0, z: -0.1, r: 0.44, c: CPK.O },
+            { x: 0.1, y: -1.1, z: 0, r: 0.48, c: CPK.C },
+            { x: -1.2, y: -0.6, z: 0.2, r: 0.48, c: CPK.C },
+            { x: -2.2, y: 1.6, z: -0.2, r: 0.42, c: CPK.O },
+            { x: 0.6, y: 2.3, z: 0.2, r: 0.42, c: CPK.O },
+            { x: -2.2, y: -1.5, z: 0.3, r: 0.42, c: CPK.O }
+          );
+        } else {
+          for (let i = 0; i < 8; i++) {
+            const ang = (i / 8) * Math.PI * 2;
+            atoms.push({
+              x: Math.cos(ang) * 2.1,
+              y: Math.sin(ang) * 1.5,
+              z: (i % 2 === 0 ? 0.35 : -0.35),
+              r: 0.46,
+              c: i % 3 === 0 ? CPK.O : (i % 4 === 0 ? CPK.N : CPK.C)
+            });
+          }
+          atoms.push({ x: 0, y: 0, z: 0, r: 0.56, c: modelType === 'coenzima_a' ? CPK.S : CPK.P });
+        }
+
+        const sphereGeo = new THREE.SphereGeometry(1, 24, 24);
+        atoms.forEach((a, idx) => {
+          const mesh = new THREE.Mesh(sphereGeo, new THREE.MeshPhongMaterial({ color: a.c, shininess: 90 }));
+          mesh.position.set(a.x, a.y, a.z);
+          mesh.scale.setScalar(a.r);
+          moleculeGroup.add(mesh);
+          if (idx > 0) bonds.push([atoms[idx - 1], a]);
+        });
+
+        const bondMat = new THREE.MeshPhongMaterial({ color: 0xcbd5e1 });
+        bonds.forEach(([a1, a2]) => {
+          const start = new THREE.Vector3(a1.x, a1.y, a1.z);
+          const end = new THREE.Vector3(a2.x, a2.y, a2.z);
+          const dir = new THREE.Vector3().subVectors(end, start);
+          const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, dir.length(), 12), bondMat);
+          cyl.position.copy(start).add(end).multiplyScalar(0.5);
+          cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+          moleculeGroup.add(cyl);
+        });
+
+        let isDragging = false, prevX = 0, prevY = 0;
+        const down = e => { isDragging = true; prevX = e.touches ? e.touches[0].clientX : e.clientX; prevY = e.touches ? e.touches[0].clientY : e.clientY; };
+        const move = e => {
+          if (!isDragging) return;
+          const cx = e.touches ? e.touches[0].clientX : e.clientX;
+          const cy = e.touches ? e.touches[0].clientY : e.clientY;
+          moleculeGroup.rotation.y += (cx - prevX) * 0.012;
+          moleculeGroup.rotation.x += (cy - prevY) * 0.012;
+          prevX = cx; prevY = cy;
+        };
+        const up = () => { isDragging = false; };
+
+        mount.addEventListener('mousedown', down);
+        mount.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', up);
+        mount.addEventListener('touchstart', down, { passive: true });
+        mount.addEventListener('touchmove', move, { passive: true });
+        window.addEventListener('touchend', up);
+
+        const animate = () => {
+          appState.threeAnimFrameId = requestAnimationFrame(animate);
+          if (!isDragging) { moleculeGroup.rotation.y += 0.007; moleculeGroup.rotation.x += 0.002; }
+          renderer.render(scene, camera);
+        };
+        animate();
+      } catch (e) {}
+    }
+
+    /***************************************************************************
+     * NAVEGACIÓN DE LECTURAS Y PANEL DIVIDIDO DEL TALLER
+     ***************************************************************************/
+    function switchReadingTab(tabNum) {
+      [1, 2, 3, 4].forEach(n => {
+        const btn = document.getElementById(`tabBtn${n}`);
+        if (!btn) return;
+        btn.className = (n === tabNum)
+          ? "px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-faroGold text-slate-950 transition shadow"
+          : "px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+      });
+      const r = SCIENTIFIC_READINGS[tabNum];
+      document.getElementById('readingContentArea').innerHTML = `<h3 class="text-base sm:text-lg font-extrabold text-faroGoldLight mb-2">${r.title}</h3>${r.html}`;
+    }
+
+    function switchModalReadingTab(tabNum) {
+      [1, 2, 3, 4].forEach(n => {
+        const btn = document.getElementById(`modalTabBtn${n}`);
+        if (!btn) return;
+        btn.className = (n === tabNum)
+          ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-faroGold text-slate-950"
+          : "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300";
+      });
+      const r = SCIENTIFIC_READINGS[tabNum];
+      document.getElementById('modalReadingContentArea').innerHTML = `<h3 class="text-base font-extrabold text-faroGoldLight mb-2">${r.title}</h3>${r.html}`;
+    }
+
+    function switchSplitReadingTab(tabNum) {
+      [1, 2, 3, 4].forEach(n => {
+        const btn = document.getElementById(`splitTab${n}`);
+        if (!btn) return;
+        btn.className = (n === tabNum)
+          ? "px-2.5 py-1 rounded-lg text-xs font-bold bg-faroGold text-slate-950"
+          : "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300";
+      });
+      const r = SCIENTIFIC_READINGS[tabNum];
+      document.getElementById('splitReadingBody').innerHTML = `<h4 class="text-sm font-extrabold text-faroGoldLight mb-1.5">${r.title}</h4>${r.html}`;
+    }
+
+    function toggleSplitReferencePanel() {
+      appState.splitPanelVisible = !appState.splitPanelVisible;
+      const splitCol = document.getElementById('splitReferenceColumn');
+      const mainCol = document.getElementById('mainProblemColumn');
+      const btnTxt = document.getElementById('toggleRefPanelText');
+
+      if (appState.splitPanelVisible) {
+        splitCol.classList.remove('hidden');
+        mainCol.className = "lg:col-span-7 glass-card rounded-2xl p-5 sm:p-7";
+        btnTxt.textContent = "Ocultar Lecturas";
+        switchSplitReadingTab(1);
+      } else {
+        splitCol.classList.add('hidden');
+        mainCol.className = "lg:col-span-12 glass-card rounded-2xl p-5 sm:p-7";
+        btnTxt.textContent = "Ver Lecturas al Lado";
+      }
+    }
+
+    function openReadingsModal() {
+      switchModalReadingTab(1);
+      document.getElementById('readingsModal').classList.remove('hidden');
+    }
+
+    function closeReadingsModal() {
+      document.getElementById('readingsModal').classList.add('hidden');
+    }
+
+    function validateStudentName() {
+      const val = document.getElementById('studentNameInput').value.trim();
+      const words = val.split(/\s+/).filter(w => w.length >= 2);
+      const btn = document.getElementById('startExamBtn');
+      const msg = document.getElementById('nameValidationMsg');
+
+      if (words.length >= 2) {
+        btn.disabled = false;
+        btn.className = "px-7 py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wider transition shadow-lg gold-gradient text-slate-950 hover:scale-105 active:scale-95 cursor-pointer";
+        msg.textContent = "✓ Nombre listo. Haz clic en 'Comenzar Taller Ahora'.";
+        msg.className = "text-xs text-emerald-400 mt-2 font-bold";
+      } else {
+        btn.disabled = true;
+        btn.className = "px-7 py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wider transition shadow-lg bg-slate-800 text-slate-500 cursor-not-allowed";
+        msg.textContent = "* Ingresa al menos un nombre y un apellido para habilitar el botón de inicio.";
+        msg.className = "text-xs text-amber-400 mt-2";
+      }
+    }
+
+    /***************************************************************************
+     * FLUJO DEL TALLER Y RENDERIZADO DE PUNTOS
+     ***************************************************************************/
+    function startExamSession() {
+      const nameInput = document.getElementById('studentNameInput').value.trim();
+      if (!nameInput) return;
+
+      appState.studentName = nameInput;
+      appState.studentId = 'STU-' + nameInput.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 12) + '-' + Date.now().toString().slice(-4);
+      appState.examStarted = true;
+      appState.startTimeISO = new Date().toLocaleTimeString('es-CO');
+
+      requestFullscreenSafe();
+      initMicrophoneMonitor();
+      registerExamAndStudentInFirebase();
+
+      document.getElementById('welcomeScreen').classList.add('hidden');
+      document.getElementById('examScreen').classList.remove('hidden');
+      document.getElementById('openReadingsBtnTop').classList.remove('hidden');
+
+      loadQuestionByIndex(0);
+    }
+
+    function loadQuestionByIndex(index) {
+      if (index >= ALL_QUESTIONS.length) {
+        finishExamSession();
+        return;
+      }
+
+      appState.currentQuestionIndex = index;
+      const qObj = ALL_QUESTIONS[index];
+      const isClosed = index < NC_COUNT;
+
+      const progressPct = Math.round(((index + 1) / ALL_QUESTIONS.length) * 100);
+      document.getElementById('examProgressBar').style.width = `${progressPct}%`;
+      document.getElementById('progressPercentLabel').textContent = `${progressPct}% completado (Punto ${index + 1} de ${ALL_QUESTIONS.length})`;
+      document.getElementById('questionCounterTitle').textContent = `Punto ${index + 1} de ${ALL_QUESTIONS.length}: ${qObj.plateTitle}`;
+
+      const phaseBadge = document.getElementById('questionPhaseBadge');
+      const pointsBadge = document.getElementById('questionPointsBadge');
+
+      if (isClosed) {
+        phaseBadge.textContent = `Parte I: Pregunta Cerrada (${index + 1} de ${NC_COUNT})`;
+        phaseBadge.className = "px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-500/40";
+        pointsBadge.textContent = "Valor: 0.185 pts";
+        appState.remainingSeconds = EXAM_CONFIG.closedTimeSeconds;
+      } else {
+        const openIdx = index - NC_COUNT + 1;
+        phaseBadge.textContent = `Parte II: Pregunta Abierta de Taller (${openIdx} de ${NA_COUNT})`;
+        phaseBadge.className = "px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        pointsBadge.textContent = "Valor: 0.260 pts";
+        appState.remainingSeconds = EXAM_CONFIG.openTimeSeconds;
+      }
+
+      document.getElementById('competenceTextSlot').textContent = `Competencia: ${qObj.competence}`;
+
+      const plateUrl = generateScientificPlatePNG(qObj);
+      document.getElementById('questionPlateImg').src = plateUrl;
+      document.getElementById('plateCaptionTitle').textContent = qObj.plateTitle;
+
+      const plateCol = document.getElementById('plateContainerCol');
+      const threeCol = document.getElementById('threeContainerCol');
+      if (qObj.has3D) {
+        plateCol.className = "xl:col-span-7 glass-sub rounded-2xl p-3 border border-slate-700 flex flex-col items-center";
+        threeCol.classList.remove('hidden');
+        setTimeout(() => initThreeMolecularViewer(qObj.model3DType), 60);
+      } else {
+        stopThreeViewer();
+        plateCol.className = "xl:col-span-12 glass-sub rounded-2xl p-3 border border-slate-700 flex flex-col items-center";
+        threeCol.classList.add('hidden');
+      }
+
+      document.getElementById('questionStemText').textContent = qObj.stem;
+
+      const closedContainer = document.getElementById('closedOptionsContainer');
+      const openContainer = document.getElementById('openAnswerContainer');
+
+      if (isClosed) {
+        closedContainer.classList.remove('hidden');
+        openContainer.classList.add('hidden');
+        renderClosedOptions(qObj, index);
+      } else {
+        closedContainer.classList.add('hidden');
+        openContainer.classList.remove('hidden');
+        const openIdx = index - NC_COUNT;
+        document.getElementById('openAnswerTextarea').value = appState.openAnswers[openIdx] || "";
+        validateOpenAnswerLive();
+      }
+
+      startQuestionCountdown();
+      updateNextButtonLockState();
+      syncStudentProgressToFirebase();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderClosedOptions(qObj, qIndex) {
+      const container = document.getElementById('closedOptionsContainer');
+      const letters = ['A', 'B', 'C', 'D'];
+      const selected = appState.closedAnswers[qIndex];
+
+      container.innerHTML = qObj.options.map((optText, optIdx) => {
+        const isSel = selected === optIdx;
+        return `
+          <button
+            type="button"
+            onclick="selectClosedOption(${optIdx})"
+            class="option-btn w-full text-left p-4 rounded-xl border ${isSel ? 'option-selected' : 'glass-sub border-slate-700/80'} flex items-start gap-3.5"
+          >
+            <span class="w-8 h-8 rounded-lg flex items-center justify-center font-extrabold text-sm shrink-0 ${isSel ? 'gold-gradient text-slate-950' : 'bg-slate-800 text-faroGoldLight border border-slate-600'}">
+              ${letters[optIdx]}
+            </span>
+            <span class="text-sm sm:text-base text-slate-100 leading-relaxed">${optText}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectClosedOption(optIdx) {
+      const idx = appState.currentQuestionIndex;
+      if (idx < NC_COUNT) {
+        appState.closedAnswers[idx] = optIdx;
+        renderClosedOptions(ALL_QUESTIONS[idx], idx);
+        updateNextButtonLockState();
+        syncStudentProgressToFirebase();
+      }
+    }
+
+    /***************************************************************************
+     * VALIDACIÓN DE PREGUNTAS ABIERTAS (4 LÍNEAS / 28 PALABRAS)
+     ***************************************************************************/
+    function validateOpenAnswerLive() {
+      const idx = appState.currentQuestionIndex;
+      if (idx < NC_COUNT) return;
+      const openIdx = idx - NC_COUNT;
+      const qObj = OPEN_QUESTIONS[openIdx];
+      const rawText = document.getElementById('openAnswerTextarea').value;
+      appState.openAnswers[openIdx] = rawText;
+
+      const cleanText = rawText.trim();
+      const words = cleanText.split(/\s+/).filter(w => w.length >= 2);
+      const uniqueWords = new Set(words.map(w => w.toLowerCase().replace(/[^a-záéíóúñ]/g, '')));
+
+      const manualLines = cleanText.split(/\n+/).filter(l => l.trim().length > 18).length;
+      const charLines = Math.floor(cleanText.length / 60);
+      const effectiveLines = Math.max(manualLines, charLines);
+
+      const normalized = cleanText.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      let matchedKeywords = 0;
+      qObj.keywords.forEach(kw => {
+        if (normalized.includes(kw)) matchedKeywords++;
+      });
+
+      const meetsWords = words.length >= 28 && uniqueWords.size >= 12;
+      const meetsLines = effectiveLines >= 4 && cleanText.length >= 200;
+      const meetsCoherence = matchedKeywords >= 2;
+
+      const isValid = meetsWords && meetsLines && meetsCoherence;
+      appState.openValidFlags[openIdx] = isValid;
+
+      document.getElementById('openStatsWords').innerHTML = `Palabras escritas: <strong class="${meetsWords ? 'text-emerald-400' : 'text-amber-300'}">${words.length} / 28</strong>`;
+      document.getElementById('openStatsLines').innerHTML = `Líneas completadas: <strong class="${meetsLines ? 'text-emerald-400' : 'text-amber-300'}">${Math.min(effectiveLines, 10)} / 4</strong>`;
+      document.getElementById('openStatsCoherence').innerHTML = meetsCoherence
+        ? `<span class="text-emerald-400 font-bold">✓ Respuesta coherente con el tema (${matchedKeywords} conceptos clave)</span>`
+        : `<span class="text-amber-300">Menciona al menos 2 conceptos del tema en tu explicación (${matchedKeywords}/2)</span>`;
+
+      const badge = document.getElementById('openValidationBadge');
+      if (isValid) {
+        badge.textContent = "✓ Respuesta Completa y Validada";
+        badge.className = "text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold";
+      } else {
+        badge.textContent = "Pendiente: mínimo 4 líneas y 28 palabras del tema";
+        badge.className = "text-xs px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold";
+      }
+
+      updateNextButtonLockState();
+      syncStudentProgressToFirebase();
+    }
+
+    /***************************************************************************
+     * TEMPORIZADOR DE BLOQUEO OBLIGATORIO
+     ***************************************************************************/
+    function startQuestionCountdown() {
+      if (appState.timerInterval) clearInterval(appState.timerInterval);
+      renderTimerDisplay();
+
+      appState.timerInterval = setInterval(() => {
+        if (appState.remainingSeconds > 0) {
+          appState.remainingSeconds--;
+          renderTimerDisplay();
+          if (appState.remainingSeconds === 0) updateNextButtonLockState();
+        }
+      }, 1000);
+    }
+
+    function renderTimerDisplay() {
+      const mins = String(Math.floor(appState.remainingSeconds / 60)).padStart(2, '0');
+      const secs = String(appState.remainingSeconds % 60).padStart(2, '0');
+      const disp = document.getElementById('questionTimerDisplay');
+      const box = document.getElementById('timerBox');
+      disp.textContent = `${mins}:${secs}`;
+
+      if (appState.remainingSeconds === 0) {
+        disp.className = "text-xl font-mono font-extrabold text-emerald-400";
+        box.className = "glass-sub px-4 py-2 rounded-xl border border-emerald-500/60 text-center min-w-[130px]";
+      } else if (appState.remainingSeconds <= 15) {
+        disp.className = "text-xl font-mono font-extrabold text-rose-400 animate-pulse";
+      } else {
+        disp.className = "text-xl font-mono font-extrabold text-amber-400";
+        box.className = "glass-sub px-4 py-2 rounded-xl border border-amber-500/60 text-center min-w-[130px]";
+      }
+    }
+
+    function updateNextButtonLockState() {
+      const idx = appState.currentQuestionIndex;
+      const isClosed = idx < NC_COUNT;
+      const timeDone = appState.remainingSeconds <= 0;
+      const hasAnswer = isClosed
+        ? appState.closedAnswers[idx] !== null
+        : appState.openValidFlags[idx - NC_COUNT] === true;
+
+      const btn = document.getElementById('nextQuestionBtn');
+      const msg = document.getElementById('lockStatusMessage');
+
+      btn.textContent = idx === ALL_QUESTIONS.length - 1
+        ? "Finalizar Taller y Ver Nota ✓"
+        : "Siguiente Punto del Taller →";
+
+      if (timeDone && hasAnswer) {
+        btn.disabled = false;
+        btn.className = "w-full sm:w-auto px-7 py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wider transition shadow-lg gold-gradient text-slate-950 hover:scale-105 active:scale-95 cursor-pointer";
+        msg.innerHTML = `<span class="text-emerald-400">✓ ¡Listo! Tiempo cumplido y respuesta guardada. Puedes avanzar.</span>`;
+      } else {
+        btn.disabled = true;
+        btn.className = "w-full sm:w-auto px-7 py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wider transition shadow-lg bg-slate-800 text-slate-500 cursor-not-allowed";
+        if (!timeDone && !hasAnswer) {
+          msg.innerHTML = `<span>🔒</span> Espera a que el reloj llegue a 00:00 y responde para desbloquear el botón.`;
+        } else if (!timeDone) {
+          msg.innerHTML = `<span>⏳</span> Respuesta marcada. Espera a que el reloj llegue a 00:00 para avanzar.`;
+        } else {
+          msg.innerHTML = isClosed
+            ? `<span>👆</span> Reloj en 00:00. Elige una opción (A, B, C o D) para continuar.`
+            : `<span>✍️</span> Reloj en 00:00. Completa las 4 líneas (28 palabras) para continuar.`;
+        }
+      }
+    }
+
+    function handleNextQuestion() {
+      loadQuestionByIndex(appState.currentQuestionIndex + 1);
+    }
+
+    /***************************************************************************
+     * PROTOCOLO ANTIFRAUDE (PESTAÑAS, SONÓMETRO Y PANTALLA COMPLETA)
+     ***************************************************************************/
+    function registerUserActivity() { appState.lastUserActivity = Date.now(); }
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+      window.addEventListener(evt, registerUserActivity, { passive: true });
+    });
+
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    ['copy', 'cut', 'paste'].forEach(evt => document.addEventListener(evt, e => e.preventDefault()));
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && ['c', 'v', 'x', 'u', 's', 'p'].includes(e.key.toLowerCase())) e.preventDefault();
+      if (e.key === 'F12') e.preventDefault();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!appState.examStarted || appState.examFinished) return;
+      if (document.hidden) {
+        const inactivityMs = Date.now() - appState.lastUserActivity;
+        const now = Date.now();
+        if (inactivityMs < 7500 && (now - appState.lastTabPenaltyTime > 5000)) {
+          appState.lastTabPenaltyTime = now;
+          applyAntifraudPenalty("Saliste de la pestaña del taller");
+        }
+      }
+    });
+
+    function requestFullscreenSafe() {
+      const elem = document.documentElement;
+      try {
+        if (elem.requestFullscreen) elem.requestFullscreen().catch(() => {});
+        else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      } catch (e) {}
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      if (appState.examStarted && !appState.examFinished && !document.fullscreenElement) {
+        document.getElementById('fullscreenModal').classList.remove('hidden');
+      }
+    });
+
+    function restoreFullscreenMode() {
+      requestFullscreenSafe();
+      document.getElementById('fullscreenModal').classList.add('hidden');
+    }
+
+    function initMicrophoneMonitor() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+        .then(stream => {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          const audioCtx = new AudioCtx();
+          const source = audioCtx.createMediaStreamSource(stream);
+          const analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 256;
+          source.connect(analyser);
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+          const checkVolume = () => {
+            if (appState.examFinished) return;
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+            const pct = Math.min(100, Math.round(((sum / dataArray.length) / 140) * 100));
+
+            const bar = document.getElementById('micLevelBar');
+            const txt = document.getElementById('micPercentText');
+            if (bar && txt) {
+              bar.style.width = `${Math.max(4, pct)}%`;
+              txt.textContent = `${pct}%`;
+              bar.className = pct >= EXAM_CONFIG.micThresholdPercent
+                ? "h-full bg-rose-500 transition-all duration-100"
+                : (pct >= 40 ? "h-full bg-amber-400 transition-all duration-100" : "h-full bg-emerald-500 transition-all duration-100");
+            }
+
+            const now = Date.now();
+            if (appState.examStarted && pct >= EXAM_CONFIG.micThresholdPercent && (now - appState.lastMicPenaltyTime > 10000)) {
+              appState.lastMicPenaltyTime = now;
+              applyAntifraudPenalty(`Ruido en el salón superior al 60% (${pct}%)`);
+            }
+            requestAnimationFrame(checkVolume);
+          };
+          checkVolume();
+        })
+        .catch(() => {});
+    }
+
+    function applyAntifraudPenalty(reason) {
+      const timeStr = new Date().toLocaleTimeString('es-CO');
+      appState.penalties.push({ reason, time: timeStr, points: EXAM_CONFIG.penaltyStep });
+      appState.penaltyPoints = Number((appState.penaltyPoints + EXAM_CONFIG.penaltyStep).toFixed(2));
+      document.getElementById('penaltyCounterDisplay').textContent = `-${appState.penaltyPoints.toFixed(2)} pts (${appState.penalties.length})`;
+      showCustomToast("Descuento Antifraude (-0.50 pts)", `${reason} (${timeStr}).`);
+      syncStudentProgressToFirebase();
+    }
+
+    function showCustomToast(title, message) {
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastMessage').textContent = message;
+      const modal = document.getElementById('customToastModal');
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.add('hidden'), 5000);
+    }
+
+    function hideCustomToast() {
+      document.getElementById('customToastModal').classList.add('hidden');
+    }
+
+    /***************************************************************************
+     * PANEL DOCENTE LOCAL (dmar2026 / 0323)
+     ***************************************************************************/
+    function openTeacherModal() {
+      document.getElementById('teacherPassInput').value = '';
+      document.getElementById('teacherAuthError').classList.add('hidden');
+      document.getElementById('teacherAuthBox').classList.remove('hidden');
+      document.getElementById('teacherControlsBox').classList.add('hidden');
+      document.getElementById('teacherModal').classList.remove('hidden');
+    }
+    function closeTeacherModal() { document.getElementById('teacherModal').classList.add('hidden'); }
+    function verifyTeacherPassword() {
+      const pass = document.getElementById('teacherPassInput').value.trim();
+      if (pass === 'dmar2026' || pass === '0323') {
+        document.getElementById('teacherAuthBox').classList.add('hidden');
+        document.getElementById('teacherControlsBox').classList.remove('hidden');
+      } else {
+        document.getElementById('teacherAuthError').classList.remove('hidden');
+      }
+    }
+    function teacherActionUnlockNow() {
+      if (!appState.examStarted) {
+        const input = document.getElementById('studentNameInput');
+        if (!input.value.trim()) input.value = "Estudiante Autorizado Docente";
+        validateStudentName();
+        startExamSession();
+      } else {
+        appState.remainingSeconds = 0;
+        renderTimerDisplay();
+        updateNextButtonLockState();
+      }
+      closeTeacherModal();
+    }
+    function teacherActionNextQuestion() {
+      if (!appState.examStarted) teacherActionUnlockNow();
+      else { closeTeacherModal(); loadQuestionByIndex(appState.currentQuestionIndex + 1); }
+    }
+    function teacherActionJumpToOpen() {
+      if (!appState.examStarted) teacherActionUnlockNow();
+      closeTeacherModal();
+      if (appState.currentQuestionIndex < NC_COUNT) loadQuestionByIndex(NC_COUNT);
+      else finishExamSession();
+    }
+    function teacherActionClearPenalties() {
+      appState.penalties = [];
+      appState.penaltyPoints = 0.0;
+      document.getElementById('penaltyCounterDisplay').textContent = `-0.00 pts (0)`;
+      syncStudentProgressToFirebase();
+      closeTeacherModal();
+    }
+    function teacherActionForceFinish() {
+      if (!appState.examStarted) teacherActionUnlockNow();
+      closeTeacherModal();
+      finishExamSession();
+    }
+
+    /***************************************************************************
+     * CÁLCULO DE NOTA, QR Y REPORTE PDF
+     ***************************************************************************/
+    function calculateDetailedScores() {
+      const pointsPerClosed = EXAM_CONFIG.closedTotalPoints / NC_COUNT;
+      const pointsPerOpen = EXAM_CONFIG.openTotalPoints / NA_COUNT;
+
+      let closedCorrectCount = 0;
+      CLOSED_QUESTIONS.forEach((q, idx) => {
+        if (appState.closedAnswers[idx] === q.correctIndex) closedCorrectCount++;
+      });
+
+      let openValidCount = 0;
+      OPEN_QUESTIONS.forEach((q, idx) => {
+        if (appState.openValidFlags[idx]) openValidCount++;
+      });
+
+      const closedEarned = closedCorrectCount * pointsPerClosed;
+      const openEarned = openValidCount * pointsPerOpen;
+      const rawTotal = closedEarned + openEarned;
+      const finalGrade = Math.max(0.0, Math.min(5.0, rawTotal - appState.penaltyPoints));
+
+      return { closedCorrectCount, openValidCount, closedEarned, openEarned, rawTotal, finalGrade };
+    }
+
+    function finishExamSession() {
+      if (appState.timerInterval) clearInterval(appState.timerInterval);
+      stopThreeViewer();
+      appState.examFinished = true;
+      appState.endTimeISO = new Date().toLocaleTimeString('es-CO');
+
+      const scores = calculateDetailedScores();
+
+      document.getElementById('examScreen').classList.add('hidden');
+      document.getElementById('openReadingsBtnTop').classList.add('hidden');
+      document.getElementById('fullscreenModal').classList.add('hidden');
+      document.getElementById('resultsScreen').classList.remove('hidden');
+
+      document.getElementById('resultStudentSubtitle').textContent =
+        `Estudiante: ${appState.studentName} | Grado: ${EXAM_CONFIG.grade} | Inicio: ${appState.startTimeISO} - Fin: ${appState.endTimeISO}`;
+
+      document.getElementById('finalGradeDisplay').textContent = scores.finalGrade.toFixed(2);
+      document.getElementById('closedScoreDisplay').textContent = `${scores.closedCorrectCount} / ${NC_COUNT}`;
+      document.getElementById('closedPointsSub').textContent = `${scores.closedEarned.toFixed(2)} pts de 3.70 pts`;
+      document.getElementById('openScoreDisplay').textContent = `${scores.openValidCount} / ${NA_COUNT}`;
+      document.getElementById('openPointsSub').textContent = `${scores.openEarned.toFixed(2)} pts de 1.30 pts`;
+      document.getElementById('finalPenaltyDisplay').textContent = `-${appState.penaltyPoints.toFixed(2)} pts`;
+      document.getElementById('finalPenaltyCountSub').textContent = `${appState.penalties.length} alertas registradas`;
+
+      new QRious({
+        element: document.getElementById('qrCanvasElement'),
+        value: JSON.stringify({
+          colegio: "FARO DE LUZ",
+          docente: EXAM_CONFIG.teacher,
+          taller: EXAM_CONFIG.examId,
+          estudiante: appState.studentName,
+          nota: scores.finalGrade.toFixed(2),
+          cerradas: `${scores.closedCorrectCount}/${NC_COUNT}`,
+          abiertas: `${scores.openValidCount}/${NA_COUNT}`
+        }),
+        size: 180,
+        level: 'M'
+      });
+
+      renderResultsBreakdown();
+      submitFinalResultsToFirebase(scores);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderResultsBreakdown() {
+      const container = document.getElementById('resultsBreakdownList');
+      const letters = ['A', 'B', 'C', 'D'];
+      let html = '';
+
+      CLOSED_QUESTIONS.forEach((q, idx) => {
+        const userAns = appState.closedAnswers[idx];
+        const isOk = userAns === q.correctIndex;
+        const userText = userAns !== null ? `${letters[userAns]}) ${q.options[userAns]}` : "Sin responder";
+        const corrText = `${letters[q.correctIndex]}) ${q.options[q.correctIndex]}`;
+
+        html += `
+          <div class="glass-sub p-4 rounded-xl border ${isOk ? 'border-emerald-500/40' : 'border-rose-500/40'} text-xs sm:text-sm space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-extrabold text-white">Punto Cerrado #${q.id}: ${q.plateTitle}</span>
+              <span class="px-2.5 py-0.5 rounded-full font-bold text-xs ${isOk ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                ${isOk ? '✓ Correcta (+0.185 pts)' : '✕ Incorrecta (0.00 pts)'}
+              </span>
+            </div>
+            <p class="text-slate-300">${q.stem}</p>
+            <div class="text-xs"><strong class="text-amber-300">Tu respuesta:</strong> ${userText}</div>
+            <div class="text-xs"><strong class="text-emerald-400">Respuesta correcta:</strong> ${corrText}</div>
+          </div>
+        `;
+      });
+
+      OPEN_QUESTIONS.forEach((q, idx) => {
+        const isOk = appState.openValidFlags[idx];
+        const userText = appState.openAnswers[idx] || "(Sin respuesta redactada)";
+        html += `
+          <div class="glass-sub p-4 rounded-xl border ${isOk ? 'border-emerald-500/40' : 'border-amber-500/40'} text-xs sm:text-sm space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="font-extrabold text-faroGoldLight">${q.plateTitle}</span>
+              <span class="px-2.5 py-0.5 rounded-full font-bold text-xs ${isOk ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                ${isOk ? '✓ Válida (+0.260 pts)' : '✕ Incompleta (0.00 pts)'}
+              </span>
+            </div>
+            <p class="text-slate-300">${q.stem}</p>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs text-slate-200 whitespace-pre-wrap">
+              <strong class="text-cyan-300 block mb-1">Tu respuesta redactada:</strong>${userText}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function generateOfficialPDFReport() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const scores = calculateDetailedScores();
+      const letters = ['A', 'B', 'C', 'D'];
+
+      const bannerData = appState.bannerDataUrl || generateOfficialBannerDataURL();
+      doc.addImage(bannerData, 'PNG', 10, 10, 190, 38);
+
+      doc.setFillColor(15, 43, 84);
+      doc.rect(10, 52, 140, 42, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10.5);
+      doc.text('REPORTE OFICIAL DE TALLER EVALUATIVO - GRADO 11°', 14, 60);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.8);
+      doc.text(`Estudiante: ${appState.studentName}`, 14, 67);
+      doc.text(`Docente: ${EXAM_CONFIG.teacher} | Asignatura: ${EXAM_CONFIG.subject}`, 14, 73);
+      doc.text(`Código del Taller: ${EXAM_CONFIG.examId}`, 14, 79);
+      doc.text(`Fecha: ${new Date().toLocaleDateString('es-CO')} | Inicio: ${appState.startTimeISO} | Fin: ${appState.endTimeISO}`, 14, 85);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(251, 191, 36);
+      doc.text(`NOTA DEFINITIVA: ${scores.finalGrade.toFixed(2)} / 5.00  (Base: ${scores.rawTotal.toFixed(2)} | Penalización: -${appState.penaltyPoints.toFixed(2)})`, 14, 91);
+
+      const qrCanvas = document.getElementById('qrCanvasElement');
+      if (qrCanvas) doc.addImage(qrCanvas.toDataURL('image/png'), 'PNG', 155, 52, 42, 42);
+
+      let yPos = 101;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(8, 27, 56);
+      doc.text('REGISTRO DE SUPERVISIÓN ANTIFRAUDE:', 10, yPos);
+      yPos += 5;
+
+      if (appState.penalties.length === 0) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(5, 150, 105);
+        doc.text('✓ Sin infracciones registradas durante el taller (0 penalizaciones).', 10, yPos);
+        yPos += 7;
+      } else {
+        appState.penalties.forEach((p, idx) => {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8.2);
+          doc.setTextColor(185, 28, 28);
+          doc.text(`${idx + 1}. [${p.time}] ${p.reason} (-${p.points.toFixed(2)} pts)`, 12, yPos);
+          yPos += 4.5;
+        });
+        yPos += 4;
+      }
+
+      ALL_QUESTIONS.forEach((q, idx) => {
+        if (yPos > 232) { doc.addPage(); yPos = 15; }
+        const isClosed = idx < NC_COUNT;
+        doc.setFillColor(230, 238, 248);
+        doc.rect(10, yPos, 190, 7, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(8, 27, 56);
+
+        if (isClosed) {
+          const isOk = appState.closedAnswers[idx] === q.correctIndex;
+          doc.text(`PUNTO CERRADO #${q.id} - ${isOk ? 'CORRECTO (+0.185)' : 'INCORRECTO (0.00)'}`, 12, yPos + 4.8);
+        } else {
+          const openIdx = idx - NC_COUNT;
+          const isOk = appState.openValidFlags[openIdx];
+          doc.text(`PREGUNTA ABIERTA #${q.id} - ${isOk ? 'VÁLIDA (+0.260)' : 'INCOMPLETA (0.00)'}`, 12, yPos + 4.8);
+        }
+        yPos += 9;
+
+        const plateUrl = generateScientificPlatePNG(q);
+        doc.addImage(plateUrl, 'PNG', 12, yPos, 48, 32);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(30, 41, 59);
+        const stemLines = doc.splitTextToSize(q.stem, 135);
+        doc.text(stemLines, 63, yPos + 3.5);
+        yPos += Math.max(35, stemLines.length * 3.6 + 5);
+
+        if (yPos > 265) { doc.addPage(); yPos = 15; }
+
+        if (isClosed) {
+          const uAns = appState.closedAnswers[idx];
+          const uStr = uAns !== null ? `${letters[uAns]}) ${q.options[uAns]}` : 'Sin responder';
+          const cStr = `${letters[q.correctIndex]}) ${q.options[q.correctIndex]}`;
+
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(15, 43, 84);
+          const uLines = doc.splitTextToSize(`Tu elección: ${uStr}`, 185);
+          doc.text(uLines, 12, yPos);
+          yPos += uLines.length * 3.8;
+
+          doc.setTextColor(5, 150, 105);
+          const cLines = doc.splitTextToSize(`Correcta: ${cStr}`, 185);
+          doc.text(cLines, 12, yPos);
+          yPos += cLines.length * 3.8 + 4;
+        } else {
+          const openIdx = idx - NC_COUNT;
+          const fullText = appState.openAnswers[openIdx] || '(Sin respuesta redactada)';
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(15, 43, 84);
+          doc.text('Respuesta íntegra redactada por el estudiante:', 12, yPos);
+          yPos += 4;
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(20, 20, 20);
+          const ansLines = doc.splitTextToSize(fullText, 185);
+          doc.text(ansLines, 12, yPos);
+          yPos += ansLines.length * 3.8 + 5;
+        }
+      });
+
+      const cleanName = appState.studentName.replace(/[^a-zA-Z0-9]/g, '_');
+      doc.save(`Taller_Vitaminas_11_${cleanName}.pdf`);
+    }
+
+    /***************************************************************************
+     * SINCRONIZACIÓN CON FIREBASE Y LA NUEVA CONSOLA DOCENTE.HTML
+     ***************************************************************************/
+    function registerExamAndStudentInFirebase() {
+      const regUrl = `${EXAM_CONFIG.firebaseBaseUrl}/registeredExams/${EXAM_CONFIG.examId}.json`;
+      fetch(regUrl, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          examId: EXAM_CONFIG.examId,
+          examTitle: EXAM_CONFIG.examTitle,
+          title: EXAM_CONFIG.examTitle,
+          grade: EXAM_CONFIG.grade,
+          subject: EXAM_CONFIG.subject,
+          teacher: EXAM_CONFIG.teacher,
+          closedCount: NC_COUNT,
+          openCount: NA_COUNT,
+          totalQuestions: ALL_QUESTIONS.length,
+          updatedAt: new Date().toISOString()
+        })
+      }).catch(() => {});
+
+      syncStudentProgressToFirebase();
+      startTeacherCommandsListener();
+    }
+
+    function syncStudentProgressToFirebase() {
+      if (!appState.studentId) return;
+      const scores = calculateDetailedScores();
+      const stuUrl = `${EXAM_CONFIG.firebaseBaseUrl}/exams/${EXAM_CONFIG.examId}/students/${appState.studentId}.json`;
+      fetch(stuUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: appState.studentId,
+          studentName: appState.studentName,
+          name: appState.studentName,
+          grade: EXAM_CONFIG.grade,
+          currentQuestion: appState.currentQuestionIndex + 1,
+          questionIndex: appState.currentQuestionIndex,
+          totalQuestions: ALL_QUESTIONS.length,
+          remainingSeconds: appState.remainingSeconds,
+          penaltiesCount: appState.penalties.length,
+          penaltyPoints: appState.penaltyPoints,
+          score: scores.finalGrade.toFixed(2),
+          provisionalGrade: scores.finalGrade.toFixed(2),
+          closedCorrect: scores.closedCorrectCount,
+          openValid: scores.openValidCount,
+          status: appState.examFinished ? 'FINALIZADO' : 'EN_CURSO',
+          lastUpdate: new Date().toLocaleTimeString('es-CO'),
+          timestamp: Date.now()
+        })
+      }).catch(() => {});
+    }
+
+    function submitFinalResultsToFirebase(scores) {
+      if (!appState.studentId) return;
+      syncStudentProgressToFirebase();
+      const subUrl = `${EXAM_CONFIG.firebaseBaseUrl}/exams/${EXAM_CONFIG.examId}/submissions/${appState.studentId}.json`;
+      fetch(subUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: appState.studentId,
+          studentName: appState.studentName,
+          name: appState.studentName,
+          examId: EXAM_CONFIG.examId,
+          examTitle: EXAM_CONFIG.examTitle,
+          grade: EXAM_CONFIG.grade,
+          finalGrade: scores.finalGrade.toFixed(2),
+          score: scores.finalGrade.toFixed(2),
+          rawScore: scores.rawTotal.toFixed(2),
+          penaltyPoints: appState.penaltyPoints.toFixed(2),
+          closedCorrect: scores.closedCorrectCount,
+          openValid: scores.openValidCount,
+          closedAnswers: appState.closedAnswers,
+          openAnswers: appState.openAnswers,
+          penalties: appState.penalties,
+          startTime: appState.startTimeISO,
+          endTime: appState.endTimeISO,
+          submittedAt: new Date().toISOString(),
+          timestamp: Date.now()
+        })
+      }).catch(() => {});
+    }
+
+    function startTeacherCommandsListener() {
+      setInterval(() => {
+        if (!appState.examStarted || appState.examFinished || !appState.studentId) return;
+        const cmdUrl = `${EXAM_CONFIG.firebaseBaseUrl}/exams/${EXAM_CONFIG.examId}/commands/${appState.studentId}.json`;
+        fetch(cmdUrl)
+          .then(r => r.json())
+          .then(cmdData => {
+            if (!cmdData) return;
+            const action = (cmdData.action || cmdData.type || cmdData.command || "").toString().toUpperCase();
+            if (!action) return;
+
+            if (action.includes('UNLOCK') || action.includes('TIME')) {
+              appState.remainingSeconds = 0;
+              renderTimerDisplay();
+              updateNextButtonLockState();
+            } else if (action.includes('NEXT') || action.includes('AVANZAR')) {
+              loadQuestionByIndex(appState.currentQuestionIndex + 1);
+            } else if (action.includes('OPEN') || action.includes('ABIERTA')) {
+              loadQuestionByIndex(NC_COUNT);
+            } else if (action.includes('RESET_PENAL') || action.includes('CLEAR_PENAL')) {
+              appState.penalties = [];
+              appState.penaltyPoints = 0.0;
+              document.getElementById('penaltyCounterDisplay').textContent = `-0.00 pts (0)`;
+              syncStudentProgressToFirebase();
+            } else if (action.includes('FINISH') || action.includes('FINALIZAR')) {
+              finishExamSession();
+            }
+            fetch(cmdUrl, { method: 'DELETE' }).catch(() => {});
+          })
+          .catch(() => {});
+      }, 3000);
+    }
+
+    /***************************************************************************
+     * RELOJ EN VIVO Y FONDO DE PARTÍCULAS
+     ***************************************************************************/
+    function initLiveClock() {
+      const update = () => {
+        document.getElementById('liveClockDisplay').textContent = new Date().toLocaleTimeString('es-CO', { hour12: false });
+      };
+      update();
+      setInterval(update, 1000);
+    }
+
+    function initParticlesBackground() {
+      const canvas = document.getElementById('particlesCanvas');
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+      window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+
+      const pts = Array.from({ length: 36 }, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        r: Math.random() * 2.4 + 1,
+        vx: (Math.random() - 0.5) * 0.45, vy: (Math.random() - 0.5) * 0.45,
+        c: Math.random() > 0.5 ? 'rgba(223, 178, 53, 0.35)' : 'rgba(56, 189, 248, 0.32)'
+      }));
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < pts.length; i++) {
+          const p = pts[i];
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fillStyle = p.c; ctx.fill();
+          for (let j = i + 1; j < pts.length; j++) {
+            const p2 = pts[j];
+            const d = Math.hypot(p.x - p2.x, p.y - p2.y);
+            if (d < 120) {
+              ctx.strokeStyle = `rgba(56, 189, 248, ${0.12 * (1 - d / 120)})`;
+              ctx.lineWidth = 0.8;
+              ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initLiveClock();
+      initParticlesBackground();
+      switchReadingTab(1);
+
+      appState.bannerDataUrl = generateOfficialBannerDataURL();
+      const bannerImg = document.getElementById('mainBannerImg');
+      bannerImg.onerror = () => { bannerImg.src = appState.bannerDataUrl; };
+      bannerImg.src = appState.bannerDataUrl;
+
+      // Auto-registrar el Taller en Firebase apenas se abra para que aparezca de inmediato en docente.html
+      const regUrl = `${EXAM_CONFIG.firebaseBaseUrl}/registeredExams/${EXAM_CONFIG.examId}.json`;
+      fetch(regUrl, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          examId: EXAM_CONFIG.examId,
+          examTitle: EXAM_CONFIG.examTitle,
+          title: EXAM_CONFIG.examTitle,
+          grade: EXAM_CONFIG.grade,
+          subject: EXAM_CONFIG.subject,
+          teacher: EXAM_CONFIG.teacher,
+          closedCount: NC_COUNT,
+          openCount: NA_COUNT,
+          totalQuestions: ALL_QUESTIONS.length,
+          updatedAt: new Date().toISOString()
+        })
+      }).catch(() => {});
+    });
+  </script>
+</body>
+</html>
